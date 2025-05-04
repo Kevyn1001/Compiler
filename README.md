@@ -42,6 +42,7 @@ bison -d parser.y
 flex lexer.l
 gcc main.c parser.tab.c lex.yy.c -o compilador
  ./compilador
+ ```
 
 ### Requisitos
 
@@ -50,3 +51,4 @@ Certifique-se de ter o **WSL (Ubuntu)** instalado com os seguintes pacotes:
 ```bash
 sudo apt update
 sudo apt install flex bison gcc build-essential -y
+```
