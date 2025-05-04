@@ -16,6 +16,15 @@
 [0-9]+           { yylval.label = strdup(yytext); return TK_NUM; }
 [A-Za-z]([A-Za-z0-9])* { yylval.label = strdup(yytext); return TK_ID; }
 \'[A-Za-z0-9]\'  {yylval.label = strdup(yytext); return TK_CHAR; }
+"=="             { return TK_EQ; }
+"!="             { return TK_NE; }
+"<="             { return TK_LE; }
+">="             { return TK_GE; }
+"<"              { return TK_LT; }
+">"              { return TK_GT; }
+"&&"             { return TK_AND; }
+"||"             { return TK_OR; }
+"!"              { return TK_NOT; }
 [+\-*/=]         { return *yytext; }
 [();]            { return *yytext; }
 [ \t\r\n]        ; // ignora espaços e quebras

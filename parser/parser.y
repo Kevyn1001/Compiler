@@ -44,7 +44,6 @@ char* tipoToStr(int tipo) {
       case 3:
         return "int";
     }
-
 }
 
 char* novaTemp(int tipo) {
@@ -69,9 +68,12 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
     } atr;
 }
 
-%token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL
-%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL
-
+%token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL TK_EQ TK_NE TK_LE TK_GE TK_LT TK_GT
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT
+%right TK_NOT
+%left TK_AND
+%left TK_OR
+%left TK_EQ TK_NE TK_LT TK_LE TK_GT TK_GE
 %left '+' '-'
 %left '*' '/'
 %type <atr> expr linha comandos bloco
@@ -199,6 +201,78 @@ expr:
         $$.traducao = $2.traducao;
         $$.tipo = $2.tipo;
     }
+  | expr TK_EQ expr {
+        char* t = novaTemp(BOOL);
+        char* tr = malloc(1000);
+        sprintf(tr, "%s%s%s = %s == %s;\n", $1.traducao, $3.traducao, t, $1.label, $3.label);
+        $$.label = t;
+        $$.traducao = tr;
+        $$.tipo = BOOL;
+    }
+  | expr TK_NE expr {
+        char* t = novaTemp(BOOL);
+        char* tr = malloc(1000);
+        sprintf(tr, "%s%s%s = %s != %s;\n", $1.traducao, $3.traducao, t, $1.label, $3.label);
+        $$.label = t;
+        $$.traducao = tr;
+        $$.tipo = BOOL;
+    }
+  | expr TK_LT expr {
+        char* t = novaTemp(BOOL);
+        char* tr = malloc(1000);
+        sprintf(tr, "%s%s%s = %s < %s;\n", $1.traducao, $3.traducao, t, $1.label, $3.label);
+        $$.label = t;
+        $$.traducao = tr;
+        $$.tipo = BOOL;
+    }
+  | expr TK_GT expr {
+        char* t = novaTemp(BOOL);
+        char* tr = malloc(1000);
+        sprintf(tr, "%s%s%s = %s > %s;\n", $1.traducao, $3.traducao, t, $1.label, $3.label);
+        $$.label = t;
+        $$.traducao = tr;
+        $$.tipo = BOOL;
+    }
+  | expr TK_LE expr {
+        char* t = novaTemp(BOOL);
+        char* tr = malloc(1000);
+        sprintf(tr, "%s%s%s = %s <= %s;\n", $1.traducao, $3.traducao, t, $1.label, $3.label);
+        $$.label = t;
+        $$.traducao = tr;
+        $$.tipo = BOOL;
+    }
+  | expr TK_GE expr {
+        char* t = novaTemp(BOOL);
+        char* tr = malloc(1000);
+        sprintf(tr, "%s%s%s = %s >= %s;\n", $1.traducao, $3.traducao, t, $1.label, $3.label);
+        $$.label = t;
+        $$.traducao = tr;
+        $$.tipo = BOOL;
+    }
+  | expr TK_AND expr {
+      char* t = novaTemp(BOOL);
+      char* tr = malloc(1000);
+      sprintf(tr, "%s%s%s = %s && %s;\n", $1.traducao, $3.traducao, t, $1.label, $3.label);
+      $$.label = t;
+      $$.traducao = tr;
+      $$.tipo = BOOL;
+  }
+  | expr TK_OR expr {
+      char* t = novaTemp(BOOL);
+      char* tr = malloc(1000);
+      sprintf(tr, "%s%s%s = %s || %s;\n", $1.traducao, $3.traducao, t, $1.label, $3.label);
+      $$.label = t;
+      $$.traducao = tr;
+      $$.tipo = BOOL;
+  }
+  | TK_NOT expr {
+      char* t = novaTemp(BOOL);
+      char* tr = malloc(1000);
+      sprintf(tr, "%s%s = !%s;\n", $2.traducao, t, $2.label);
+      $$.label = t;
+      $$.traducao = tr;
+      $$.tipo = BOOL;
+  }
 ;
 
 %%
