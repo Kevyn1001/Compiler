@@ -1,20 +1,20 @@
 # Compilador
 
 ## ✅ Parte I – Implementado
-- [x] Declaração de variáveis
-- [x] Atribuições
-- [x] Expressões com operações aritméticas
+- [x] Declaração de variáveis ✅
+- [x] Atribuições ✅
+- [x] Expressões com operações aritméticas ✅
 ### Tipos suportados:
-- [x] `int`
-- [x] `float`
-- [x] `char`
-- [x] `bool`
+- [x] `int` ✅
+- [x] `float` ✅
+- [x] `char` ✅
+- [x] `bool` ✅
 ### Literais
-- [x] Números inteiros e reais
-- [x] Booleanos (`true`, `false`)
-- [x] Caracteres (ex: `'a'`)
+- [x] Números inteiros e reais ✅
+- [x] Booleanos (`true`, `false`) ✅
+- [x] Caracteres (ex: `'a'`) ✅
 ### Operadores
-- [x] Aritméticos: `+`, `-`, `*`, `/`
+- [x] Aritméticos: `+`, `-`, `*`, `/` ✅
 - [ ] Lógicos
 - [ ] Relacionais
 ### Conversões
