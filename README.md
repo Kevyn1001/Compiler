@@ -4,19 +4,23 @@
 - [x] Declaração de variáveis ✅
 - [x] Atribuições ✅
 - [x] Expressões com operações aritméticas ✅
+
 ### Tipos suportados:
 - [x] `int` ✅
 - [x] `float` ✅
 - [x] `char` ✅
 - [x] `bool` ✅
+
 ### Literais
 - [x] Números inteiros e reais ✅
 - [x] Booleanos (`true`, `false`) ✅
 - [x] Caracteres (ex: `'a'`) ✅
+
 ### Operadores
 - [x] Aritméticos: `+`, `-`, `*`, `/` ✅
-- [ ] Lógicos
-- [ ] Relacionais
+- [x] Lógicos: `&&`, `||`, `!` ✅
+- [x] Relacionais: `<`, `<=`, `>`, `>=`, `==`, `!=` ✅
+
 ### Conversões
 - [ ] Conversão implícita
 - [ ] Conversão explícita
@@ -37,18 +41,31 @@
 
 ## ⚙️ Como executar
 
+### Com Makefile
+
+Use o comando abaixo para compilar automaticamente:
+
 ```bash
-bison -d parser.y
-flex lexer.l
-gcc main.c parser.tab.c lex.yy.c -o compilador
- ./compilador
- ```
+make
+```
+### O binário será gerado com o nome compilador. Para executar:
 
-### Requisitos
+```bash
+./compilador
+```
 
-Certifique-se de ter o **WSL (Ubuntu)** instalado com os seguintes pacotes:
+### Limpando arquivos gerados
+Você pode usar o comando abaixo para limpar arquivos temporários e recompilar do zero:
+
+```bash
+make clean
+```
+
+## Requisitos
+Certifique-se de ter o WSL (Ubuntu) ou um sistema Linux com os seguintes pacotes:
 
 ```bash
 sudo apt update
 sudo apt install flex bison gcc build-essential -y
 ```
+
