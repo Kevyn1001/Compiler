@@ -150,7 +150,7 @@ expr:
   | TK_BOOL {
         char* t = novaTemp(BOOL);
         char* tr = malloc(100);
-        ($1 == "true")?sprintf(tr, "%s = 1;\n", t):sprintf(tr, "%s = 0;\n", t);
+        ($1 && strcmp($1, "true") == 0)?sprintf(tr, "%s = 1;\n", t):sprintf(tr, "%s = 0;\n", t);
         $$.label = t;
         $$.traducao = tr;
         $$.tipo = BOOL;
