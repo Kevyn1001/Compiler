@@ -5,6 +5,8 @@
 
 #define INT 0
 #define FLOAT 1
+#define CHAR 2
+#define BOOL 3
 
 int tempCounter = 1;
 char declaracoes[10000] = "";
@@ -32,7 +34,17 @@ void declararVariavel(const char* nome, int tipo) {
 }
 
 char* tipoToStr(int tipo) {
-    return tipo == FLOAT ? "float" : "int";
+    switch(tipo){
+      case 0:
+        return "int";
+      case 1:
+        return "float";
+      case 2:
+        return "char";
+      case 3:
+        return "int";
+    }
+
 }
 
 char* novaTemp(int tipo) {
@@ -57,8 +69,8 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
     } atr;
 }
 
-%token <label> TK_ID TK_NUM TK_REAL
-%token TK_TIPO_INT TK_TIPO_FLOAT
+%token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL
 
 %left '+' '-'
 %left '*' '/'
@@ -100,6 +112,14 @@ linha:
         declararVariavel($2, FLOAT);
         $$.traducao = strdup("");
     }
+  | TK_TIPO_CHAR TK_ID ';' {
+        declararVariavel($2, CHAR);
+        $$.traducao = strdup("");
+    }
+  | TK_TIPO_BOOL TK_ID ';' {
+        declararVariavel($2, BOOL);
+        $$.traducao = strdup("");
+    }
 ;
 
 expr:
@@ -118,6 +138,22 @@ expr:
         $$.label = t;
         $$.traducao = tr;
         $$.tipo = FLOAT;
+    }
+  | TK_CHAR {
+        char* t = novaTemp(CHAR);
+        char* tr = malloc(100);
+        sprintf(tr, "%s = %s;\n", t, $1);
+        $$.label = t;
+        $$.traducao = tr;
+        $$.tipo = CHAR;
+      }
+  | TK_BOOL {
+        char* t = novaTemp(BOOL);
+        char* tr = malloc(100);
+        ($1 && strcmp($1, "true") == 0)?sprintf(tr, "%s = 1;\n", t):sprintf(tr, "%s = 0;\n", t);
+        $$.label = t;
+        $$.traducao = tr;
+        $$.tipo = BOOL;
     }
   | TK_ID {
         int idx = buscarSimbolo($1);
