@@ -168,24 +168,116 @@ expr:
         $$.tipo = tipo;
     }
   | expr '+' expr {
-        int tipoRes = $1.tipo;
-        char* t = novaTemp(tipoRes);
-        char* tr = malloc(1000);
-        sprintf(tr, "%s%s%s = %s + %s;\n",
-                $1.traducao, $3.traducao, t, $1.label, $3.label);
-        $$.label = t;
-        $$.traducao = tr;
-        $$.tipo = tipoRes;
+    int tipoRes;
+    char* t1 = $1.label;
+    char* t2 = $3.label;
+    char* tr = malloc(1000);
+
+    if ($1.tipo == INT && $3.tipo == FLOAT) {
+        tipoRes = FLOAT;
+        char* convertido = novaTemp(FLOAT);
+        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t1);
+        t1 = convertido;
+    } else if ($1.tipo == FLOAT && $3.tipo == INT) {
+        tipoRes = FLOAT;
+        char* convertido = novaTemp(FLOAT);
+        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t2);
+        t2 = convertido;
+    } else {
+        tipoRes = $1.tipo;
+        sprintf(tr, "%s%s", $1.traducao, $3.traducao);
+    }
+
+    char* t = novaTemp(tipoRes);
+    sprintf(tr + strlen(tr), "%s = %s + %s;\n", t, t1, t2);
+    
+    $$.label = t;
+    $$.traducao = tr;
+    $$.tipo = tipoRes;
+    }
+  | expr '-' expr {
+    int tipoRes;
+    char* t1 = $1.label;
+    char* t2 = $3.label;
+    char* tr = malloc(1000);
+
+    if ($1.tipo == INT && $3.tipo == FLOAT) {
+        tipoRes = FLOAT;
+        char* convertido = novaTemp(FLOAT);
+        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t1);
+        t1 = convertido;
+    } else if ($1.tipo == FLOAT && $3.tipo == INT) {
+        tipoRes = FLOAT;
+        char* convertido = novaTemp(FLOAT);
+        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t2);
+        t2 = convertido;
+    } else {
+        tipoRes = $1.tipo;
+        sprintf(tr, "%s%s", $1.traducao, $3.traducao);
+    }
+
+    char* t = novaTemp(tipoRes);
+    sprintf(tr + strlen(tr), "%s = %s - %s;\n", t, t1, t2);
+
+    $$.label = t;
+    $$.traducao = tr;
+    $$.tipo = tipoRes;
     }
   | expr '*' expr {
-        int tipoRes = $1.tipo;
-        char* t = novaTemp(tipoRes);
-        char* tr = malloc(1000);
-        sprintf(tr, "%s%s%s = %s * %s;\n",
-                $1.traducao, $3.traducao, t, $1.label, $3.label);
-        $$.label = t;
-        $$.traducao = tr;
-        $$.tipo = tipoRes;
+    int tipoRes;
+    char* t1 = $1.label;
+    char* t2 = $3.label;
+    char* tr = malloc(1000);
+
+    if ($1.tipo == INT && $3.tipo == FLOAT) {
+        tipoRes = FLOAT;
+        char* convertido = novaTemp(FLOAT);
+        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t1);
+        t1 = convertido;
+    } else if ($1.tipo == FLOAT && $3.tipo == INT) {
+        tipoRes = FLOAT;
+        char* convertido = novaTemp(FLOAT);
+        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t2);
+        t2 = convertido;
+    } else {
+        tipoRes = $1.tipo;
+        sprintf(tr, "%s%s", $1.traducao, $3.traducao);
+    }
+
+    char* t = novaTemp(tipoRes);
+    sprintf(tr + strlen(tr), "%s = %s * %s;\n", t, t1, t2);
+    
+    $$.label = t;
+    $$.traducao = tr;
+    $$.tipo = tipoRes;
+    }
+  | expr '/' expr {
+    int tipoRes;
+    char* t1 = $1.label;
+    char* t2 = $3.label;
+    char* tr = malloc(1000);
+
+    if ($1.tipo == INT && $3.tipo == FLOAT) {
+        tipoRes = FLOAT;
+        char* convertido = novaTemp(FLOAT);
+        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t1);
+        t1 = convertido;
+    } else if ($1.tipo == FLOAT && $3.tipo == INT) {
+        tipoRes = FLOAT;
+        char* convertido = novaTemp(FLOAT);
+        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t2);
+        t2 = convertido;
+    } else {
+        tipoRes = $1.tipo;
+        sprintf(tr, "%s%s", $1.traducao, $3.traducao);
+    }
+
+    char* t = novaTemp(tipoRes);
+    sprintf(tr + strlen(tr), "%s = %s / %s;\n", t, t1, t2);
+
+    $$.label = t;
+    $$.traducao = tr;
+    $$.tipo = tipoRes;
     }
   | TK_ID '=' expr {
         int idx = buscarSimbolo($1);
@@ -256,7 +348,7 @@ expr:
       $$.label = t;
       $$.traducao = tr;
       $$.tipo = BOOL;
-  }
+    }
   | expr TK_OR expr {
       char* t = novaTemp(BOOL);
       char* tr = malloc(1000);
@@ -264,7 +356,7 @@ expr:
       $$.label = t;
       $$.traducao = tr;
       $$.tipo = BOOL;
-  }
+    }
   | TK_NOT expr {
       char* t = novaTemp(BOOL);
       char* tr = malloc(1000);
@@ -272,7 +364,39 @@ expr:
       $$.label = t;
       $$.traducao = tr;
       $$.tipo = BOOL;
-  }
+    }
+  | '(' TK_TIPO_INT ')' expr {
+      char* t = novaTemp(INT);
+      char* tr = malloc(1000);
+      sprintf(tr, "%s%s = (int) %s;\n", $4.traducao, t, $4.label);
+      $$.label = t;
+      $$.traducao = tr;
+      $$.tipo = INT;
+    }
+  | '(' TK_TIPO_FLOAT ')' expr {
+        char* t = novaTemp(FLOAT);
+        char* tr = malloc(1000);
+        sprintf(tr, "%s%s = (float) %s;\n", $4.traducao, t, $4.label);
+        $$.label = t;
+        $$.traducao = tr;
+        $$.tipo = FLOAT;
+    }
+  | '(' TK_TIPO_CHAR ')' expr {
+        char* t = novaTemp(CHAR);
+        char* tr = malloc(1000);
+        sprintf(tr, "%s%s = (char) %s;\n", $4.traducao, t, $4.label);
+        $$.label = t;
+        $$.traducao = tr;
+        $$.tipo = CHAR;
+    }
+  | '(' TK_TIPO_BOOL ')' expr {
+    char* t = novaTemp(BOOL);
+      char* tr = malloc(1000);
+        sprintf(tr, "%s%s = (int) %s;\n", $4.traducao, t, $4.label); // cast lógico para int
+        $$.label = t;
+        $$.traducao = tr;
+        $$.tipo = BOOL;
+    }
 ;
 
 %%
