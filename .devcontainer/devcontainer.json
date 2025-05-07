@@ -7,7 +7,7 @@
   "postCreateCommand": "make",
   "remoteUser": "vscode",
   "mounts": [
-    "source=${localWorkspaceFolder},target=/workspaceFolder,type=bind"
+    "source=${localWorkspaceFolder},target=/organic fortnight,type=bind"
   ],
-  "workspaceFolder": "/workspaceFolder"
+  "workspaceFolder": "/organic fortnight"
 }
