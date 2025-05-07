@@ -1,15 +1,10 @@
 {
   "name": "Compilador Dev Environment",
-  "image": "ubuntu:20.04", 
-  "features": {
-    "ghcr.io/devcontainers/features/apt:1": {
-      "packages": ["flex", "bison", "gcc", "build-essential"]
-    }
-  },
+  "image": "mcr.microsoft.com/vscode/devcontainers/base:ubuntu-20.04",
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash"
   },
-  "postCreateCommand": "make",  
+  "postCreateCommand": "make",
   "remoteUser": "vscode",
   "mounts": [
     "source=${localWorkspaceFolder},target=/workspace,type=bind"
