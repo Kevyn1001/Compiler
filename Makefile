@@ -29,3 +29,6 @@ $(EXEC): $(MAIN_FILE) $(YACC_GEN_C) $(LEX_GEN)
 
 clean:
 	rm -f $(EXEC) $(LEX_GEN) $(YACC_GEN_C) $(YACC_GEN_H)
+
+test: $(EXEC)
+	./$(EXEC) tests/testes.txt
