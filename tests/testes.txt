@@ -1,1 +1,4 @@
-1 + 2 * 3;
+char C1;
+char C2;
+int R;
+R = C1 + C2;
