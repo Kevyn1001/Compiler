@@ -133,7 +133,7 @@ bloco:
 
         char* linha = strtok($1.traducao, "\n");
         while (linha != NULL) {
-            printf("    %s;\n", linha);
+            printf("    %s\n", linha);
             linha = strtok(NULL, "\n");
         }
 
