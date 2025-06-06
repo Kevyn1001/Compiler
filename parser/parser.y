@@ -121,12 +121,24 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
 %%
 
 bloco:
-    comandos {
+     comandos {
+        printf("#include <stdio.h>\n\n");
+        printf("int main() {\n");
+
         printf("%s", declaracoes);
+
         for (int i = 0; i < qtdSimbolos; i++) {
-            printf("%s %s;\n", tipoToStr(tabela[i].tipo), tabela[i].nome);
+            printf("    %s %s;\n", tipoToStr(tabela[i].tipo), tabela[i].nome);
         }
-        printf("%s\n", $1.traducao);
+
+        char* linha = strtok($1.traducao, "\n");
+        while (linha != NULL) {
+            printf("    %s\n", linha);
+            linha = strtok(NULL, "\n");
+        }
+
+        printf("    return 0;\n");
+        printf("}\n");
     }
 ;
 
