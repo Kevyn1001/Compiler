@@ -10,6 +10,7 @@
 #define BOOL 3
 
 int tempCounter = 1;
+int labelCounter = 1;
 char declaracoes[10000] = "";
 
 typedef struct {
@@ -70,6 +71,12 @@ int tiposCompativeis(int tipo1, int tipo2, int operador) {
     return 0;
 }
 
+char* novoRotulo() {
+    char* l = malloc(10);
+    sprintf(l, "L%d", labelCounter++);
+    return l;
+}
+
 void declararVariavel(const char* nome, int tipo) {
     if (buscarSimbolo(nome) == -1) {
         strcpy(tabela[qtdSimbolos].nome, nome);
@@ -113,14 +120,14 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
 }
 
 %token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL TK_EQ TK_NE TK_LE TK_GE TK_LT TK_GT
-%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE
 %left TK_OR
 %left TK_AND
 %right TK_NOT
 %left TK_EQ TK_NE TK_LT TK_LE TK_GT TK_GE
 %left '+' '-'
 %left '*' '/'
-%type <atr> expr linha comandos bloco
+%type <atr> expr linha comandos bloco comando_if bloco_comandos
 
 %%
 
@@ -178,7 +185,62 @@ linha:
         declararVariavel($2, BOOL);
         $$.traducao = strdup("");
     }
+  | comando_if { 
+        $$.traducao = $1.traducao;
+    }
 ;
+
+//==============================================================
+//           REGRAS PARA BLOCOS E COMANDOS DE CONTROLE
+//==============================================================
+
+bloco_comandos:
+    '{' comandos '}' {
+        $$.traducao = $2.traducao;
+    }
+;
+
+comando_if:
+    TK_IF '(' expr ')' bloco_comandos {
+        if ($3.tipo != BOOL) {
+            yyerror("A condição de um if deve ser um valor booleano.");
+            YYERROR;
+        }
+        char* rotulo_fim = novoRotulo();
+        char* tr = malloc(4096);
+
+        sprintf(tr, "%s    if_false %s goto %s\n%s%s:\n", 
+                $3.traducao, $3.label, rotulo_fim, 
+                $5.traducao, 
+                rotulo_fim);
+        
+        $$.traducao = tr;
+    }
+
+  | TK_IF '(' expr ')' bloco_comandos TK_ELSE bloco_comandos {
+        if ($3.tipo != BOOL) {
+            yyerror("A condição de um if deve ser um valor booleano.");
+            YYERROR;
+        }
+        char* rotulo_else = novoRotulo();
+        char* rotulo_fim = novoRotulo();
+        char* tr = malloc(8192);
+
+        sprintf(tr, "%s    if_false %s goto %s\n%s    goto %s\n%s:\n%s%s:\n",
+                $3.traducao, $3.label, rotulo_else,
+                $5.traducao,
+                rotulo_fim,
+                rotulo_else,
+                $7.traducao,
+                rotulo_fim);
+
+        $$.traducao = tr;
+    }
+;
+
+//==============================================================
+//                 INÍCIO DAS REGRAS DE EXPRESSÃO
+//==============================================================
 
 expr:
     TK_NUM {

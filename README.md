@@ -41,7 +41,7 @@
 
 - [ ] **Estruturas de Bloco e Escopo:** Suporte para `{ ... }`, contexto e escopos (global/local).
 - [ ] **Estruturas de Controle:**
-    - Comandos condicionais (`if`, `if-else`).
+    - Comandos condicionais (`if`, `if-else`). ✅
     - Comandos de repetição (`while`, `do-while`, `for`).
     - Comando de seleção (`switch`).
     - Controle de laços (`break`, `continue`).
