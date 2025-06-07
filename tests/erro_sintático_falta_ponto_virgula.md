@@ -5,8 +5,6 @@ Este teste garante que o compilador detecta corretamente a falta de ; ao final d
 
 ### Código na Linguagem
 ```c
-Copiar
-Editar
 int A
 A = 5;
 ```
