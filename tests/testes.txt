@@ -1,4 +1,7 @@
-char C1;
-char C2;
-int R;
-R = C1 + C2;
+int B;
+B = 5;
+if (B > 100) {
+  B = 1;
+} else {
+  B = 0;
+}

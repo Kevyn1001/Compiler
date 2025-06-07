@@ -10,6 +10,7 @@
 #define BOOL 3
 
 int tempCounter = 1;
+int labelCounter = 1;
 char declaracoes[10000] = "";
 
 typedef struct {
@@ -29,41 +30,51 @@ int buscarSimbolo(const char* nome) {
 
 int tiposCompativeis(int tipo1, int tipo2, int operador) {
 
+    // Regras para Operadores Aritméticos (+, -, *, /)
     if (operador == '+' || operador == '-' || operador == '*' || operador == '/') {
 
-        if ((tipo1 == INT && tipo2 == FLOAT) || (tipo1 == FLOAT && tipo2 == INT))
-            return 1;
-
+        // Rejeita qualquer operação com booleano
         if (tipo1 == BOOL || tipo2 == BOOL)
             return 0;
 
-        if (tipo1 == tipo2)
+        // Se qualquer um dos tipos for float, a operação é válida (com promoção)
+        if (tipo1 == FLOAT || tipo2 == FLOAT)
             return 1;
-
-        return 0;
+        
+        // Se chegar aqui, os tipos restantes são INT ou CHAR.
+        // Qualquer combinação entre eles é válida.
+        if ((tipo1 == INT || tipo1 == CHAR) && (tipo2 == INT || tipo2 == CHAR))
+            return 1;
     }
 
+    // Regras para Operadores Relacionais (==, !=, <, etc.)
     if (operador == TK_EQ || operador == TK_NE || operador == TK_LT || operador == TK_LE
         || operador == TK_GT || operador == TK_GE) {
-        if ((tipo1 == INT && tipo2 == FLOAT) || (tipo1 == FLOAT && tipo2 == INT))
+        
+        // Permite misturar tipos numéricos (int, float, char)
+        if ((tipo1 == INT || tipo1 == FLOAT || tipo1 == CHAR) &&
+            (tipo2 == INT || tipo2 == FLOAT || tipo2 == CHAR))
             return 1;
 
-        if (tipo1 == tipo2)
+        // Permite comparar bool com bool
+        if (tipo1 == BOOL && tipo2 == BOOL)
             return 1;
-
-        if ((tipo1 == BOOL && tipo2 == BOOL))
-            return 1;
-
-        return 0;
     }
 
+    // Regras para Operadores Lógicos (&&, ||, !)
     if (operador == TK_AND || operador == TK_OR || operador == TK_NOT) {
         if (tipo1 == BOOL && tipo2 == BOOL)
             return 1;
-        return 0;
     }
 
-    return 0; 
+    // Se nenhuma regra permitiu, a operação é incompatível.
+    return 0;
+}
+
+char* novoRotulo() {
+    char* l = malloc(10);
+    sprintf(l, "L%d", labelCounter++);
+    return l;
 }
 
 void declararVariavel(const char* nome, int tipo) {
@@ -109,24 +120,36 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
 }
 
 %token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL TK_EQ TK_NE TK_LE TK_GE TK_LT TK_GT
-%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT
-%right TK_NOT
-%left TK_AND
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE
 %left TK_OR
+%left TK_AND
+%right TK_NOT
 %left TK_EQ TK_NE TK_LT TK_LE TK_GT TK_GE
 %left '+' '-'
 %left '*' '/'
-%type <atr> expr linha comandos bloco
+%type <atr> expr linha comandos bloco comando_if bloco_comandos
 
 %%
 
 bloco:
-    comandos {
+     comandos {
+        printf("#include <stdio.h>\n\n");
+        printf("int main() {\n");
+
         printf("%s", declaracoes);
+
         for (int i = 0; i < qtdSimbolos; i++) {
-            printf("%s %s;\n", tipoToStr(tabela[i].tipo), tabela[i].nome);
+            printf("    %s %s;\n", tipoToStr(tabela[i].tipo), tabela[i].nome);
         }
-        printf("%s\n", $1.traducao);
+
+        char* linha = strtok($1.traducao, "\n");
+        while (linha != NULL) {
+            printf("    %s\n", linha);
+            linha = strtok(NULL, "\n");
+        }
+
+        printf("    return 0;\n");
+        printf("}\n");
     }
 ;
 
@@ -162,7 +185,62 @@ linha:
         declararVariavel($2, BOOL);
         $$.traducao = strdup("");
     }
+  | comando_if { 
+        $$.traducao = $1.traducao;
+    }
 ;
+
+//==============================================================
+//           REGRAS PARA BLOCOS E COMANDOS DE CONTROLE
+//==============================================================
+
+bloco_comandos:
+    '{' comandos '}' {
+        $$.traducao = $2.traducao;
+    }
+;
+
+comando_if:
+    TK_IF '(' expr ')' bloco_comandos {
+        if ($3.tipo != BOOL) {
+            yyerror("A condição de um if deve ser um valor booleano.");
+            YYERROR;
+        }
+        char* rotulo_fim = novoRotulo();
+        char* tr = malloc(4096);
+
+        sprintf(tr, "%s    if_false %s goto %s\n%s%s:\n", 
+                $3.traducao, $3.label, rotulo_fim, 
+                $5.traducao, 
+                rotulo_fim);
+        
+        $$.traducao = tr;
+    }
+
+  | TK_IF '(' expr ')' bloco_comandos TK_ELSE bloco_comandos {
+        if ($3.tipo != BOOL) {
+            yyerror("A condição de um if deve ser um valor booleano.");
+            YYERROR;
+        }
+        char* rotulo_else = novoRotulo();
+        char* rotulo_fim = novoRotulo();
+        char* tr = malloc(8192);
+
+        sprintf(tr, "%s    if_false %s goto %s\n%s    goto %s\n%s:\n%s%s:\n",
+                $3.traducao, $3.label, rotulo_else,
+                $5.traducao,
+                rotulo_fim,
+                rotulo_else,
+                $7.traducao,
+                rotulo_fim);
+
+        $$.traducao = tr;
+    }
+;
+
+//==============================================================
+//                 INÍCIO DAS REGRAS DE EXPRESSÃO
+//==============================================================
 
 expr:
     TK_NUM {
@@ -209,150 +287,215 @@ expr:
     }
   | expr '+' expr {
     if (!tiposCompativeis($1.tipo, $3.tipo, '+')) {
-            yyerror("Tipos incompatíveis para operação +");
-            YYERROR;
+        yyerror("Tipos incompatíveis para operação +");
+        YYERROR;
     }
 
     int tipoRes;
     char* t1 = $1.label;
     char* t2 = $3.label;
-    char* tr = malloc(1000);
+    char* traducao_extra = malloc(512); // Para guardar casts, se necessário
+    traducao_extra[0] = '\0';
 
-    if ($1.tipo == INT && $3.tipo == FLOAT) {
+    // 1. Define o tipo do resultado
+    if ($1.tipo == FLOAT || $3.tipo == FLOAT) {
         tipoRes = FLOAT;
-        char* convertido = novaTemp(FLOAT);
-        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t1);
-        t1 = convertido;
-    } else if ($1.tipo == FLOAT && $3.tipo == INT) {
-        tipoRes = FLOAT;
-        char* convertido = novaTemp(FLOAT);
-        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t2);
-        t2 = convertido;
-    } else {
-        tipoRes = $1.tipo;
-        sprintf(tr, "%s%s", $1.traducao, $3.traducao);
+    } else { // int+int, int+char, char+char -> resultado é int
+        tipoRes = INT;
     }
 
-    char* t = novaTemp(tipoRes);
-    sprintf(tr + strlen(tr), "%s = %s + %s;\n", t, t1, t2);
+    // 2. Se o resultado for float, converte quem não for
+    if (tipoRes == FLOAT) {
+        if ($1.tipo != FLOAT) {
+            char* c = novaTemp(FLOAT);
+            sprintf(traducao_extra + strlen(traducao_extra), "    %s = (float)%s;\n", c, t1);
+            t1 = c; // t1 agora aponta para a nova temporária
+        }
+        if ($3.tipo != FLOAT) {
+            char* c = novaTemp(FLOAT);
+            sprintf(traducao_extra + strlen(traducao_extra), "    %s = (float)%s;\n", c, t2);
+            t2 = c; // t2 agora aponta para a nova temporária
+        }
+    }
+    // Não é preciso cast para int+char, pois a promoção é implícita em C
 
-    $$.label = t;
+    // 3. Gera o código final
+    char* t_res = novaTemp(tipoRes);
+    char* tr = malloc(2048);
+    sprintf(tr, "%s%s%s    %s = %s + %s;\n", $1.traducao, $3.traducao, traducao_extra, t_res, t1, t2);
+
+    $$.label = t_res;
     $$.traducao = tr;
     $$.tipo = tipoRes;
-    }
+    
+    // Libera a memória que não será mais usada
+    free(traducao_extra);
+}
   | expr '-' expr {
     if (!tiposCompativeis($1.tipo, $3.tipo, '-')) {
-            yyerror("Tipos incompatíveis para operação -");
-            YYERROR;
+        yyerror("Tipos incompatíveis para operação -");
+        YYERROR;
     }
 
     int tipoRes;
     char* t1 = $1.label;
     char* t2 = $3.label;
-    char* tr = malloc(1000);
+    char* traducao_extra = malloc(512); // Para guardar casts, se necessário
+    traducao_extra[0] = '\0';           // Inicia como string vazia
 
-    if ($1.tipo == INT && $3.tipo == FLOAT) {
+    // 1. Define o tipo do resultado
+    if ($1.tipo == FLOAT || $3.tipo == FLOAT) {
         tipoRes = FLOAT;
-        char* convertido = novaTemp(FLOAT);
-        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t1);
-        t1 = convertido;
-    } else if ($1.tipo == FLOAT && $3.tipo == INT) {
-        tipoRes = FLOAT;
-        char* convertido = novaTemp(FLOAT);
-        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t2);
-        t2 = convertido;
-    } else {
-        tipoRes = $1.tipo;
-        sprintf(tr, "%s%s", $1.traducao, $3.traducao);
+    } else { // int+int, int+char, char+char -> resultado é int
+        tipoRes = INT;
     }
 
-    char* t = novaTemp(tipoRes);
-    sprintf(tr + strlen(tr), "%s = %s - %s;\n", t, t1, t2);
+    // 2. Se o resultado for float, converte quem não for
+    if (tipoRes == FLOAT) {
+        if ($1.tipo != FLOAT) {
+            char* c = novaTemp(FLOAT);
+            sprintf(traducao_extra + strlen(traducao_extra), "    %s = (float)%s;\n", c, t1);
+            t1 = c; // t1 agora aponta para a nova temporária
+        }
+        if ($3.tipo != FLOAT) {
+            char* c = novaTemp(FLOAT);
+            sprintf(traducao_extra + strlen(traducao_extra), "    %s = (float)%s;\n", c, t2);
+            t2 = c; // t2 agora aponta para a nova temporária
+        }
+    }
 
-    $$.label = t;
+    // 3. Gera o código final
+    char* t_res = novaTemp(tipoRes);
+    char* tr = malloc(2048);
+    sprintf(tr, "%s%s%s    %s = %s - %s;\n", $1.traducao, $3.traducao, traducao_extra, t_res, t1, t2);
+
+    $$.label = t_res;
     $$.traducao = tr;
     $$.tipo = tipoRes;
-    }
+    
+    free(traducao_extra);
+}
   | expr '*' expr {
     if (!tiposCompativeis($1.tipo, $3.tipo, '*')) {
-            yyerror("Tipos incompatíveis para operação *");
-            YYERROR;
+        yyerror("Tipos incompatíveis para operação *");
+        YYERROR;
     }
 
     int tipoRes;
     char* t1 = $1.label;
     char* t2 = $3.label;
-    char* tr = malloc(1000);
+    char* traducao_extra = malloc(512);
+    traducao_extra[0] = '\0';
 
-    if ($1.tipo == INT && $3.tipo == FLOAT) {
+    if ($1.tipo == FLOAT || $3.tipo == FLOAT) {
         tipoRes = FLOAT;
-        char* convertido = novaTemp(FLOAT);
-        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t1);
-        t1 = convertido;
-    } else if ($1.tipo == FLOAT && $3.tipo == INT) {
-        tipoRes = FLOAT;
-        char* convertido = novaTemp(FLOAT);
-        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t2);
-        t2 = convertido;
     } else {
-        tipoRes = $1.tipo;
-        sprintf(tr, "%s%s", $1.traducao, $3.traducao);
+        tipoRes = INT;
     }
 
-    char* t = novaTemp(tipoRes);
-    sprintf(tr + strlen(tr), "%s = %s * %s;\n", t, t1, t2);
+    if (tipoRes == FLOAT) {
+        if ($1.tipo != FLOAT) {
+            char* c = novaTemp(FLOAT);
+            sprintf(traducao_extra + strlen(traducao_extra), "    %s = (float)%s;\n", c, t1);
+            t1 = c;
+        }
+        if ($3.tipo != FLOAT) {
+            char* c = novaTemp(FLOAT);
+            sprintf(traducao_extra + strlen(traducao_extra), "    %s = (float)%s;\n", c, t2);
+            t2 = c;
+        }
+    }
 
-    $$.label = t;
+    char* t_res = novaTemp(tipoRes);
+    char* tr = malloc(2048);
+    sprintf(tr, "%s%s%s    %s = %s * %s;\n", $1.traducao, $3.traducao, traducao_extra, t_res, t1, t2);
+
+    $$.label = t_res;
     $$.traducao = tr;
     $$.tipo = tipoRes;
-    }
+
+    free(traducao_extra);
+}
   | expr '/' expr {
     if (!tiposCompativeis($1.tipo, $3.tipo, '/')) {
-            yyerror("Tipos incompatíveis para operação /");
-            YYERROR;
+        yyerror("Tipos incompatíveis para operação /");
+        YYERROR;
     }
 
     int tipoRes;
     char* t1 = $1.label;
     char* t2 = $3.label;
-    char* tr = malloc(1000);
+    char* traducao_extra = malloc(512);
+    traducao_extra[0] = '\0';
 
-    if ($1.tipo == INT && $3.tipo == FLOAT) {
+    if ($1.tipo == FLOAT || $3.tipo == FLOAT) {
         tipoRes = FLOAT;
-        char* convertido = novaTemp(FLOAT);
-        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t1);
-        t1 = convertido;
-    } else if ($1.tipo == FLOAT && $3.tipo == INT) {
-        tipoRes = FLOAT;
-        char* convertido = novaTemp(FLOAT);
-        sprintf(tr, "%s%s%s = (float) %s;\n", $1.traducao, $3.traducao, convertido, t2);
-        t2 = convertido;
     } else {
-        tipoRes = $1.tipo;
-        sprintf(tr, "%s%s", $1.traducao, $3.traducao);
+        tipoRes = INT;
     }
 
-    char* t = novaTemp(tipoRes);
-    sprintf(tr + strlen(tr), "%s = %s / %s;\n", t, t1, t2);
+    if (tipoRes == FLOAT) {
+        if ($1.tipo != FLOAT) {
+            char* c = novaTemp(FLOAT);
+            sprintf(traducao_extra + strlen(traducao_extra), "    %s = (float)%s;\n", c, t1);
+            t1 = c;
+        }
+        if ($3.tipo != FLOAT) {
+            char* c = novaTemp(FLOAT);
+            sprintf(traducao_extra + strlen(traducao_extra), "    %s = (float)%s;\n", c, t2);
+            t2 = c;
+        }
+    }
 
-    $$.label = t;
+    char* t_res = novaTemp(tipoRes);
+    char* tr = malloc(2048);
+    sprintf(tr, "%s%s%s    %s = %s / %s;\n", $1.traducao, $3.traducao, traducao_extra, t_res, t1, t2);
+
+    $$.label = t_res;
     $$.traducao = tr;
     $$.tipo = tipoRes;
-    }
+
+    free(traducao_extra);
+}
   | TK_ID '=' expr {
-        int idx = buscarSimbolo($1);
-        int tipoVar = (idx != -1) ? tabela[idx].tipo : INT;
-        char* tr = malloc(500);
-        sprintf(tr, "%s%s = %s;\n", $3.traducao, $1, $3.label);
-        $$.label = $1;
-        $$.traducao = tr;
-        $$.tipo = tipoVar;
+    int idx = buscarSimbolo($1);
+    if (idx == -1) {
+        char* error_msg = (char*) malloc(strlen($1) + 25);
+        sprintf(error_msg, "Variável '%s' não declarada", $1);
+        yyerror(error_msg);
+        free(error_msg);
+        YYERROR;
     }
-  | '(' expr ')' {
-        $$.label = $2.label;
-        $$.traducao = $2.traducao;
-        $$.tipo = $2.tipo;
+
+    int tipoVar = tabela[idx].tipo; // Tipo da variável à esquerda (ex: I -> INT)
+    int tipoExpr = $3.tipo;         // Tipo da expressão à direita (ex: F -> FLOAT)
+    char* labelExpr = $3.label;     // Label da expressão (ex: T1)
+    char* traducaoExpr = $3.traducao; // Tradução da expressão
+    char* tr;
+
+    if (tipoVar == tipoExpr) {
+        tr = malloc(strlen(traducaoExpr) + strlen($1) + strlen(labelExpr) + 10);
+        sprintf(tr, "%s%s = %s;\n", traducaoExpr, $1, labelExpr);
+    } else if (tipoVar == INT && tipoExpr == FLOAT) {
+        char* t_cast = novaTemp(INT); // Nova temporária para guardar o resultado do cast
+        tr = malloc(strlen(traducaoExpr) + strlen(t_cast) + strlen(labelExpr) + strlen($1) + 30);
+        sprintf(tr, "%s%s = (int) %s;\n%s = %s;\n", traducaoExpr, t_cast, labelExpr, $1, t_cast);
+    } else if (tipoVar == FLOAT && tipoExpr == INT) {
+        char* t_cast = novaTemp(FLOAT);
+        tr = malloc(strlen(traducaoExpr) + strlen(t_cast) + strlen(labelExpr) + strlen($1) + 30);
+        sprintf(tr, "%s%s = (float) %s;\n%s = %s;\n", traducaoExpr, t_cast, labelExpr, $1, t_cast);
+    } else {
+        yyerror("Tipos incompatíveis para atribuição");
+        YYERROR;
     }
+
+    $$.label = $1; 
+    $$.traducao = tr;
+    $$.tipo = tipoVar;
+
+    free(traducaoExpr);
+    free(labelExpr);
+}
   | expr TK_EQ expr {
         if (!tiposCompativeis($1.tipo, $3.tipo, TK_EQ)) {
             yyerror("Tipos incompatíveis para operação ==");
@@ -569,7 +712,7 @@ expr:
       $$.traducao = tr;
       $$.tipo = BOOL;
     }
-  | '(' TK_TIPO_INT ')' expr {
+  | '(' TK_TIPO_INT ')' expr %prec TK_NOT {
       char* t = novaTemp(INT);
       char* tr = malloc(1000);
       sprintf(tr, "%s%s = (int) %s;\n", $4.traducao, t, $4.label);
@@ -577,7 +720,7 @@ expr:
       $$.traducao = tr;
       $$.tipo = INT;
     }
-  | '(' TK_TIPO_FLOAT ')' expr {
+  | '(' TK_TIPO_FLOAT ')' expr %prec TK_NOT {
         char* t = novaTemp(FLOAT);
         char* tr = malloc(1000);
         sprintf(tr, "%s%s = (float) %s;\n", $4.traducao, t, $4.label);
@@ -585,7 +728,7 @@ expr:
         $$.traducao = tr;
         $$.tipo = FLOAT;
     }
-  | '(' TK_TIPO_CHAR ')' expr {
+  | '(' TK_TIPO_CHAR ')' expr %prec TK_NOT {
         char* t = novaTemp(CHAR);
         char* tr = malloc(1000);
         sprintf(tr, "%s%s = (char) %s;\n", $4.traducao, t, $4.label);
@@ -593,13 +736,17 @@ expr:
         $$.traducao = tr;
         $$.tipo = CHAR;
     }
-  | '(' TK_TIPO_BOOL ')' expr {
+  | '(' TK_TIPO_BOOL ')' expr %prec TK_NOT {
     char* t = novaTemp(BOOL);
       char* tr = malloc(1000);
         sprintf(tr, "%s%s = (int) %s;\n", $4.traducao, t, $4.label); // cast lógico para int
         $$.label = t;
         $$.traducao = tr;
         $$.tipo = BOOL;
+    } | '(' expr ')' {
+        $$.label = $2.label;
+        $$.traducao = $2.traducao;
+        $$.tipo = $2.tipo;
     }
 ;
 
