@@ -7,6 +7,8 @@
 %%
 
 "while"          { return TK_WHILE; }
+"do"             { return TK_DO; }
+"for"            { return TK_FOR; }
 "int"            { return TK_TIPO_INT; }
 "float"          { return TK_TIPO_FLOAT; }
 "char"           { return TK_TIPO_CHAR; }
@@ -30,7 +32,6 @@
 "||"             { return TK_OR; }
 "!"              { return TK_NOT; }
 [+\-*/=]         { return *yytext; }
-[{}]             { return *yytext; }
 [();]            { return *yytext; }
 [\{\}]           { return *yytext; }
 [ \t\r\n]        ; // ignora espaços e quebras

@@ -126,10 +126,12 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
 }
 
 %token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL TK_EQ TK_NE TK_LE TK_GE TK_LT TK_GT
-%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE TK_WHILE TK_PRINT
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE TK_WHILE TK_PRINT TK_DO TK_FOR
 %left TK_OR
 %left TK_AND
 %right TK_NOT
+%nonassoc LOWER_THAN_ELSE
+%nonassoc TK_ELSE
 %left TK_EQ TK_NE TK_LT TK_LE TK_GT TK_GE
 %left '+' '-'
 %left '*' '/'
@@ -195,6 +197,69 @@ linha:
       $$.label    = NULL;  /* não usamos label de expressão aqui */
       $$.tipo     = BOOL;  /* tipo “dummy” para o bloco */
   }
+  | TK_DO bloco_comandos TK_WHILE '(' expr ')' ';' {
+      /* 1. Cria um rótulo de início do loop */
+      char* start = novaLabel();
+
+      /* 2. Monta o código */
+      /* $2 = bloco_comandos, $5 = expr */
+      char* tr = malloc(
+           strlen(start) + 2
+         + strlen($2.traducao)
+         + strlen($5.traducao)
+         + 128
+      );
+      sprintf(tr,
+        "%s:\n"              /* Lstart: */
+        "%s"                 /* corpo do loop */
+        "%s"                 /* avaliação da condição */
+        "    if (%s) goto %s;\n"
+        , start
+        , $2.traducao
+        , $5.traducao
+        , $5.label
+        , start
+      );
+
+      /* 3. Preenche o union <atr> */
+      $$.traducao = tr;
+      $$.label    = NULL;     /* sem label de valor */
+      $$.tipo     = BOOL;     /* valor irrelevante aqui */
+  } 
+  | TK_FOR '(' expr ';' expr ';' expr ')' bloco_comandos {
+      /* rótulos */
+      char* start = novaLabel();
+      char* end   = novaLabel();
+      /* fixa tamanho suficiente */
+      char* tr = malloc(
+          strlen($3.traducao)   /* init */
+        + strlen($5.traducao)   /* cond */
+        + strlen($7.traducao)   /* incr */
+        + strlen($9.traducao)   /* corpo */
+        + 256
+      );
+      sprintf(tr,
+        "%s"                    /* init */
+        "%s:\n"                 /* Lstart: */
+        "%s"                    /* teste da condição */
+        "    if (!%s) goto %s;\n"
+        "%s"                    /* corpo do loop */
+        "%s"                    /* incremento */
+        "    goto %s;\n"
+        "%s:\n"                 /* Lend: */
+        , $3.traducao
+        , start
+        , $5.traducao
+        , $5.label, end
+        , $9.traducao
+        , $7.traducao
+        , start
+        , end
+      );
+      $$.traducao = tr;
+      $$.label    = NULL;
+      $$.tipo     = BOOL;
+  } 
   | TK_PRINT '(' expr ')' ';' {
       char* tr = malloc(strlen($3.traducao) + 64);
       sprintf(tr,
@@ -245,7 +310,7 @@ bloco_comandos:
 ;
 
 comando_if:
-    TK_IF '(' expr ')' bloco_comandos {
+    TK_IF '(' expr ')' bloco_comandos %prec LOWER_THAN_ELSE {
         if ($3.tipo != BOOL) {
             yyerror("A condição de um if deve ser um valor booleano.");
             YYERROR;
