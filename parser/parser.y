@@ -11,6 +11,7 @@
 
 int tempCounter = 1;
 int labelCounter = 1;
+int stateCounter = 0;
 char declaracoes[10000] = "";
 
 char* novaLabel() {
@@ -24,14 +25,40 @@ typedef struct {
     int tipo;
 } Simbolo;
 
-Simbolo tabela[100];
-int qtdSimbolos = 0;
+typedef struct {
+  Simbolo tabela[100];
+  int qtdSimbolos;
+} PilhaEstados;
 
-int buscarSimbolo(const char* nome) {
-    for (int i = 0; i < qtdSimbolos; i++) {
-        if (strcmp(tabela[i].nome, nome) == 0) return i;
-    }
-    return -1;
+PilhaEstados estado[100];
+
+void novoContexto(){
+  if(stateCounter < 99){
+    stateCounter++;
+    estado[stateCounter].qtdSimbolos = 0;
+  }
+}
+
+void encerraContexto(){
+  estado[stateCounter].qtdSimbolos = 0;
+  stateCounter--;
+}
+
+int buscarSimbolo(const char* nome, int contexto) {
+  for(int i = 0; i < estado[contexto].qtdSimbolos; i++){
+    if(strcmp(estado[contexto].tabela[i].nome, nome) == 0) return i;
+  }
+
+  return -1;
+}
+
+int buscarContexto(const char* nome){
+  for(int i = stateCounter; i >=0; i--){
+    if(buscarSimbolo(nome, i) != -1)
+      return i;
+  }
+
+  return -1;
 }
 
 int tiposCompativeis(int tipo1, int tipo2, int operador) {
@@ -56,7 +83,7 @@ int tiposCompativeis(int tipo1, int tipo2, int operador) {
     // Regras para Operadores Relacionais (==, !=, <, etc.)
     if (operador == TK_EQ || operador == TK_NE || operador == TK_LT || operador == TK_LE
         || operador == TK_GT || operador == TK_GE) {
-        
+
         // Permite misturar tipos numéricos (int, float, char)
         if ((tipo1 == INT || tipo1 == FLOAT || tipo1 == CHAR) &&
             (tipo2 == INT || tipo2 == FLOAT || tipo2 == CHAR))
@@ -84,10 +111,11 @@ char* novoRotulo() {
 }
 
 void declararVariavel(const char* nome, int tipo) {
-    if (buscarSimbolo(nome) == -1) {
-        strcpy(tabela[qtdSimbolos].nome, nome);
-        tabela[qtdSimbolos++].tipo = tipo;
+    if (buscarSimbolo(nome, stateCounter) == -1) {
+      strcpy(estado[stateCounter].tabela[estado[stateCounter].qtdSimbolos].nome, nome);
+      estado[stateCounter].tabela[estado[stateCounter].qtdSimbolos++].tipo = tipo;
     }
+
 }
 
 char* tipoToStr(int tipo) {
@@ -140,14 +168,13 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
 %%
 
 bloco:
-     comandos {
+     comandos{
         printf("#include <stdio.h>\n\n");
         printf("int main() {\n");
-
         printf("%s", declaracoes);
 
-        for (int i = 0; i < qtdSimbolos; i++) {
-            printf("    %s %s;\n", tipoToStr(tabela[i].tipo), tabela[i].nome);
+        for (int i = 0; i < estado[stateCounter].qtdSimbolos; i++) {
+            printf("    %s %s;\n", tipoToStr(estado[stateCounter].tabela[i].tipo), estado[stateCounter].tabela[i].nome);
         }
 
         char* linha = strtok($1.traducao, "\n");
@@ -294,7 +321,7 @@ linha:
         declararVariavel($2, BOOL);
         $$.traducao = strdup("");
     }
-  | comando_if { 
+  | comando_if {
         $$.traducao = $1.traducao;
     }
 ;
@@ -304,8 +331,8 @@ linha:
 //==============================================================
 
 bloco_comandos:
-    '{' comandos '}' {
-        $$.traducao = $2.traducao;
+    inicio_contexto comandos fim_contexto {
+      $$.traducao = $2.traducao;
     }
 ;
 
@@ -347,6 +374,18 @@ comando_if:
     }
 ;
 
+inicio_contexto:
+  '{'{
+    novoContexto();
+  }
+;
+
+fim_contexto:
+  '}' {
+    encerraContexto();
+  }
+;
+
 //==============================================================
 //                 INÍCIO DAS REGRAS DE EXPRESSÃO
 //==============================================================
@@ -385,8 +424,8 @@ expr:
         $$.tipo = BOOL;
     }
   | TK_ID {
-        int idx = buscarSimbolo($1);
-        int tipo = (idx != -1) ? tabela[idx].tipo : INT;
+        int idx = buscarSimbolo($1, buscarContexto($1));
+        int tipo = (idx != -1) ? estado[stateCounter].tabela[idx].tipo : INT;
         char* t = novaTemp(tipo);
         char* tr = malloc(100);
         sprintf(tr, "%s = %s;\n", t, $1);
@@ -436,7 +475,7 @@ expr:
     $$.label = t_res;
     $$.traducao = tr;
     $$.tipo = tipoRes;
-    
+
     // Libera a memória que não será mais usada
     free(traducao_extra);
 }
@@ -481,7 +520,7 @@ expr:
     $$.label = t_res;
     $$.traducao = tr;
     $$.tipo = tipoRes;
-    
+
     free(traducao_extra);
 }
   | expr '*' expr {
@@ -567,7 +606,8 @@ expr:
     free(traducao_extra);
 }
   | TK_ID '=' expr {
-    int idx = buscarSimbolo($1);
+    int contextoId = buscarContexto($1);
+    int idx = buscarSimbolo($1, contextoId);
     if (idx == -1) {
         char* error_msg = (char*) malloc(strlen($1) + 25);
         sprintf(error_msg, "Variável '%s' não declarada", $1);
@@ -576,7 +616,7 @@ expr:
         YYERROR;
     }
 
-    int tipoVar = tabela[idx].tipo; // Tipo da variável à esquerda (ex: I -> INT)
+    int tipoVar = estado[stateCounter].tabela[idx].tipo; // Tipo da variável à esquerda (ex: I -> INT)
     int tipoExpr = $3.tipo;         // Tipo da expressão à direita (ex: F -> FLOAT)
     char* labelExpr = $3.label;     // Label da expressão (ex: T1)
     char* traducaoExpr = $3.traducao; // Tradução da expressão
@@ -584,21 +624,21 @@ expr:
 
     if (tipoVar == tipoExpr) {
         tr = malloc(strlen(traducaoExpr) + strlen($1) + strlen(labelExpr) + 10);
-        sprintf(tr, "%s%s = %s;\n", traducaoExpr, $1, labelExpr);
+        (contextoId == 0)?sprintf(tr, "%s%s = %s;\n", traducaoExpr, $1, labelExpr):sprintf(tr, "%s", traducaoExpr);
     } else if (tipoVar == INT && tipoExpr == FLOAT) {
         char* t_cast = novaTemp(INT); // Nova temporária para guardar o resultado do cast
         tr = malloc(strlen(traducaoExpr) + strlen(t_cast) + strlen(labelExpr) + strlen($1) + 30);
-        sprintf(tr, "%s%s = (int) %s;\n%s = %s;\n", traducaoExpr, t_cast, labelExpr, $1, t_cast);
+        (contextoId == 0)?sprintf(tr, "%s%s = (int) %s;\n%s = %s;\n", traducaoExpr, t_cast, labelExpr, $1, t_cast):sprintf(tr, "%s%s = (int) %s;\n", traducaoExpr, t_cast, labelExpr);
     } else if (tipoVar == FLOAT && tipoExpr == INT) {
         char* t_cast = novaTemp(FLOAT);
         tr = malloc(strlen(traducaoExpr) + strlen(t_cast) + strlen(labelExpr) + strlen($1) + 30);
-        sprintf(tr, "%s%s = (float) %s;\n%s = %s;\n", traducaoExpr, t_cast, labelExpr, $1, t_cast);
+        (contextoId == 0)?sprintf(tr, "%s%s = (float) %s;\n%s = %s;\n", traducaoExpr, t_cast, labelExpr, $1, t_cast):sprintf(tr, "%s%s = (float) %s;\n", traducaoExpr, t_cast, labelExpr);
     } else {
         yyerror("Tipos incompatíveis para atribuição");
         YYERROR;
     }
 
-    $$.label = $1; 
+    $$.label = $1;
     $$.traducao = tr;
     $$.tipo = tipoVar;
 
