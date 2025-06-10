@@ -1,7 +1,4 @@
-int B;
-B = 5;
-if (B > 100) {
-  B = 1;
-} else {
-  B = 0;
+int i;
+for (i = 0; i < 5; i = i + 1) {
+    print(i);
 }
