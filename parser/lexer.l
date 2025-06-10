@@ -6,6 +6,9 @@
 
 %%
 
+"while"          { return TK_WHILE; }
+"do"             { return TK_DO; }
+"for"            { return TK_FOR; }
 "int"            { return TK_TIPO_INT; }
 "float"          { return TK_TIPO_FLOAT; }
 "char"           { return TK_TIPO_CHAR; }
@@ -14,6 +17,9 @@
 "false"          { yylval.label = strdup(yytext); return TK_BOOL; }
 [0-9]+"."[0-9]+  { yylval.label = strdup(yytext); return TK_REAL; }
 [0-9]+           { yylval.label = strdup(yytext); return TK_NUM; }
+"if"             { return TK_IF; }
+"else"           { return TK_ELSE; }
+"print"      		 { return TK_PRINT; }
 [A-Za-z]([A-Za-z0-9])* { yylval.label = strdup(yytext); return TK_ID; }
 \'[A-Za-z0-9]\'  {yylval.label = strdup(yytext); return TK_CHAR; }
 "=="             { return TK_EQ; }
@@ -27,6 +33,7 @@
 "!"              { return TK_NOT; }
 [+\-*/=]         { return *yytext; }
 [();]            { return *yytext; }
+[\{\}]           { return *yytext; }
 [ \t\r\n]        ; // ignora espaços e quebras
 
 %%

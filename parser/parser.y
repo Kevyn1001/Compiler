@@ -14,6 +14,12 @@ int labelCounter = 1;
 int stateCounter = 0;
 char declaracoes[10000] = "";
 
+char* novaLabel() {
+    char* l = malloc(16);
+    sprintf(l, "L%d", labelCounter++);
+    return l;
+}
+
 typedef struct {
     char nome[50];
     int tipo;
@@ -67,7 +73,7 @@ int tiposCompativeis(int tipo1, int tipo2, int operador) {
         // Se qualquer um dos tipos for float, a operação é válida (com promoção)
         if (tipo1 == FLOAT || tipo2 == FLOAT)
             return 1;
-
+        
         // Se chegar aqui, os tipos restantes são INT ou CHAR.
         // Qualquer combinação entre eles é válida.
         if ((tipo1 == INT || tipo1 == CHAR) && (tipo2 == INT || tipo2 == CHAR))
@@ -148,10 +154,12 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
 }
 
 %token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL TK_EQ TK_NE TK_LE TK_GE TK_LT TK_GT
-%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE TK_WHILE TK_PRINT TK_DO TK_FOR
 %left TK_OR
 %left TK_AND
 %right TK_NOT
+%nonassoc LOWER_THAN_ELSE
+%nonassoc TK_ELSE
 %left TK_EQ TK_NE TK_LT TK_LE TK_GT TK_GE
 %left '+' '-'
 %left '*' '/'
@@ -192,13 +200,114 @@ comandos:
 ;
 
 linha:
-    expr ';' {
+    TK_WHILE '(' expr ')' '{' comandos '}' {
+      char* start = novaLabel();
+      char* end   = novaLabel();
+      char* tr = malloc(strlen($3.traducao)
+                        + strlen($6.traducao) + 128);
+      sprintf(tr,
+        "%s:\n"                      /* Lstart: */
+        "%s"                         /* condição gera temp e código */
+        "    if (!%s) goto %s;\n"    /* se false, salta para Lend */
+        "%s"                         /* corpo do loop */
+        "    goto %s;\n"             /* volta a Lstart */
+        "%s:\n"                      /* Lend: */
+        , start
+        , $3.traducao
+        , $3.label
+        , end
+        , $6.traducao
+        , start
+        , end
+      );
+      $$.traducao = tr;
+      $$.label    = NULL;  /* não usamos label de expressão aqui */
+      $$.tipo     = BOOL;  /* tipo “dummy” para o bloco */
+  }
+  | TK_DO bloco_comandos TK_WHILE '(' expr ')' ';' {
+      /* 1. Cria um rótulo de início do loop */
+      char* start = novaLabel();
+
+      /* 2. Monta o código */
+      /* $2 = bloco_comandos, $5 = expr */
+      char* tr = malloc(
+           strlen(start) + 2
+         + strlen($2.traducao)
+         + strlen($5.traducao)
+         + 128
+      );
+      sprintf(tr,
+        "%s:\n"              /* Lstart: */
+        "%s"                 /* corpo do loop */
+        "%s"                 /* avaliação da condição */
+        "    if (%s) goto %s;\n"
+        , start
+        , $2.traducao
+        , $5.traducao
+        , $5.label
+        , start
+      );
+
+      /* 3. Preenche o union <atr> */
+      $$.traducao = tr;
+      $$.label    = NULL;     /* sem label de valor */
+      $$.tipo     = BOOL;     /* valor irrelevante aqui */
+  } 
+  | TK_FOR '(' expr ';' expr ';' expr ')' bloco_comandos {
+      /* rótulos */
+      char* start = novaLabel();
+      char* end   = novaLabel();
+      /* fixa tamanho suficiente */
+      char* tr = malloc(
+          strlen($3.traducao)   /* init */
+        + strlen($5.traducao)   /* cond */
+        + strlen($7.traducao)   /* incr */
+        + strlen($9.traducao)   /* corpo */
+        + 256
+      );
+      sprintf(tr,
+        "%s"                    /* init */
+        "%s:\n"                 /* Lstart: */
+        "%s"                    /* teste da condição */
+        "    if (!%s) goto %s;\n"
+        "%s"                    /* corpo do loop */
+        "%s"                    /* incremento */
+        "    goto %s;\n"
+        "%s:\n"                 /* Lend: */
+        , $3.traducao
+        , start
+        , $5.traducao
+        , $5.label, end
+        , $9.traducao
+        , $7.traducao
+        , start
+        , end
+      );
+      $$.traducao = tr;
+      $$.label    = NULL;
+      $$.tipo     = BOOL;
+  } 
+  | TK_PRINT '(' expr ')' ';' {
+      char* tr = malloc(strlen($3.traducao) + 64);
+      sprintf(tr,
+        "%s    printf(\"%%d\\n\", %s);\n",
+        $3.traducao,
+        $3.label
+      );
+      $$.traducao = tr;
+      $$.label    = NULL;
+      $$.tipo     = BOOL;  
+    }
+  | expr ';' {
         $$.label = $1.label;
         $$.traducao = $1.traducao;
+        $$.tipo     = $1.tipo;
     }
   | TK_TIPO_INT TK_ID ';' {
         declararVariavel($2, INT);
         $$.traducao = strdup("");
+        $$.label    = NULL;
+        $$.tipo     = INT;
     }
   | TK_TIPO_FLOAT TK_ID ';' {
         declararVariavel($2, FLOAT);
@@ -228,7 +337,7 @@ bloco_comandos:
 ;
 
 comando_if:
-    TK_IF '(' expr ')' bloco_comandos {
+    TK_IF '(' expr ')' bloco_comandos %prec LOWER_THAN_ELSE {
         if ($3.tipo != BOOL) {
             yyerror("A condição de um if deve ser um valor booleano.");
             YYERROR;
@@ -236,11 +345,11 @@ comando_if:
         char* rotulo_fim = novoRotulo();
         char* tr = malloc(4096);
 
-        sprintf(tr, "%s    if_false %s goto %s\n%s%s:\n",
-                $3.traducao, $3.label, rotulo_fim,
-                $5.traducao,
+        sprintf(tr, "%s    if_false %s goto %s\n%s%s:\n", 
+                $3.traducao, $3.label, rotulo_fim, 
+                $5.traducao, 
                 rotulo_fim);
-
+        
         $$.traducao = tr;
     }
 
