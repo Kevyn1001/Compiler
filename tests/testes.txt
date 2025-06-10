@@ -1,7 +1,7 @@
-int B;
-B = 5;
-if (B > 100) {
-  B = 1;
-} else {
-  B = 0;
+int i;
+i = 0;
+
+while (i < 10) {
+    i = i + 1;
+    print(i);
 }

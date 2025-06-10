@@ -13,6 +13,12 @@ int tempCounter = 1;
 int labelCounter = 1;
 char declaracoes[10000] = "";
 
+char* novaLabel() {
+    char* l = malloc(16);
+    sprintf(l, "L%d", labelCounter++);
+    return l;
+}
+
 typedef struct {
     char nome[50];
     int tipo;
@@ -120,7 +126,7 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
 }
 
 %token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL TK_EQ TK_NE TK_LE TK_GE TK_LT TK_GT
-%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE TK_WHILE TK_PRINT
 %left TK_OR
 %left TK_AND
 %right TK_NOT
@@ -165,13 +171,51 @@ comandos:
 ;
 
 linha:
-    expr ';' {
+    TK_WHILE '(' expr ')' '{' comandos '}' {
+      char* start = novaLabel();
+      char* end   = novaLabel();
+      char* tr = malloc(strlen($3.traducao)
+                        + strlen($6.traducao) + 128);
+      sprintf(tr,
+        "%s:\n"                      /* Lstart: */
+        "%s"                         /* condição gera temp e código */
+        "    if (!%s) goto %s;\n"    /* se false, salta para Lend */
+        "%s"                         /* corpo do loop */
+        "    goto %s;\n"             /* volta a Lstart */
+        "%s:\n"                      /* Lend: */
+        , start
+        , $3.traducao
+        , $3.label
+        , end
+        , $6.traducao
+        , start
+        , end
+      );
+      $$.traducao = tr;
+      $$.label    = NULL;  /* não usamos label de expressão aqui */
+      $$.tipo     = BOOL;  /* tipo “dummy” para o bloco */
+  }
+  | TK_PRINT '(' expr ')' ';' {
+      char* tr = malloc(strlen($3.traducao) + 64);
+      sprintf(tr,
+        "%s    printf(\"%%d\\n\", %s);\n",
+        $3.traducao,
+        $3.label
+      );
+      $$.traducao = tr;
+      $$.label    = NULL;
+      $$.tipo     = BOOL;  
+    }
+  | expr ';' {
         $$.label = $1.label;
         $$.traducao = $1.traducao;
+        $$.tipo     = $1.tipo;
     }
   | TK_TIPO_INT TK_ID ';' {
         declararVariavel($2, INT);
         $$.traducao = strdup("");
+        $$.label    = NULL;
+        $$.tipo     = INT;
     }
   | TK_TIPO_FLOAT TK_ID ';' {
         declararVariavel($2, FLOAT);

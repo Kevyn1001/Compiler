@@ -6,6 +6,7 @@
 
 %%
 
+"while"          { return TK_WHILE; }
 "int"            { return TK_TIPO_INT; }
 "float"          { return TK_TIPO_FLOAT; }
 "char"           { return TK_TIPO_CHAR; }
@@ -16,6 +17,7 @@
 [0-9]+           { yylval.label = strdup(yytext); return TK_NUM; }
 "if"             { return TK_IF; }
 "else"           { return TK_ELSE; }
+"print"      		 { return TK_PRINT; }
 [A-Za-z]([A-Za-z0-9])* { yylval.label = strdup(yytext); return TK_ID; }
 \'[A-Za-z0-9]\'  {yylval.label = strdup(yytext); return TK_CHAR; }
 "=="             { return TK_EQ; }
@@ -30,6 +32,7 @@
 [+\-*/=]         { return *yytext; }
 [{}]             { return *yytext; }
 [();]            { return *yytext; }
+[\{\}]           { return *yytext; }
 [ \t\r\n]        ; // ignora espaços e quebras
 
 %%
