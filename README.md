@@ -47,7 +47,7 @@
     - Controle de laços (`break`, `continue`).
 - [ ] **Funções:** Declaração e chamada.
 - [ ] **Tipos de Dados Avançados:** Strings, concatenação e Vetores (arrays).
-- [ ] **Comandos de Entrada e Saída:** Funções como `read` ou `print`.
+- [x] **Comandos de Entrada e Saída:** Funções como `read` ou `print`. ✅
 - [x] **Comentários:** Suporte para `//` e/ou `/* */`. ✅
 - [ ] **Operadores Adicionais:** Operadores compostos (`+=`, `-=`) e negação unária (`-`).
 - [ ] **Inferência de Tipos:** (Recurso avançado).
