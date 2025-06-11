@@ -154,7 +154,7 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
 }
 
 %token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL TK_EQ TK_NE TK_LE TK_GE TK_LT TK_GT 
-%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE TK_WHILE TK_PRINT TK_DO TK_FOR TK_SWITCH TK_CASE TK_DEFAULT TK_BREAK TK_READ
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE TK_WHILE TK_PRINT TK_DO TK_FOR TK_SWITCH TK_CASE TK_DEFAULT TK_BREAK TK_READ TK_CONTINUE
 %left TK_OR
 %left TK_AND
 %right TK_NOT
@@ -244,6 +244,12 @@ linha:
         $3.label
       );
       $$.traducao = tr;
+    }
+  | TK_BREAK ';' {
+        $$.traducao = strdup("        break;\n");
+    }
+  | TK_CONTINUE ';' {
+        $$.traducao = strdup("        continue;\n");
     }
 ;
 
@@ -387,6 +393,9 @@ case_clause:
     }
   | TK_BREAK ';' {
         $$.traducao = strdup("        break;\n");
+    }
+  | TK_CONTINUE ';' {
+        $$.traducao = strdup("        continue;\n");
     }
 ;
 

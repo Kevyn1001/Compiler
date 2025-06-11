@@ -13,6 +13,7 @@
 "case"           { return TK_CASE; }   
 "default"        { return TK_DEFAULT; }
 "break"          { return TK_BREAK; }
+"continue"       { return TK_CONTINUE; }
 "while"          { return TK_WHILE; }
 "do"             { return TK_DO; }
 "for"            { return TK_FOR; }
