@@ -154,16 +154,14 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
 }
 
 %token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL TK_EQ TK_NE TK_LE TK_GE TK_LT TK_GT
-%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE TK_WHILE TK_PRINT TK_DO TK_FOR
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE TK_WHILE TK_PRINT TK_DO TK_FOR TK_SWITCH TK_CASE TK_DEFAULT TK_BREAK
 %left TK_OR
 %left TK_AND
 %right TK_NOT
-%nonassoc LOWER_THAN_ELSE
-%nonassoc TK_ELSE
 %left TK_EQ TK_NE TK_LT TK_LE TK_GT TK_GE
 %left '+' '-'
 %left '*' '/'
-%type <atr> expr linha comandos bloco comando_if bloco_comandos
+%type <atr> expr linha comandos bloco bloco_comandos comandos_opt case_clauses case_clause sentenca sentenca_fechada sentenca_aberta
 
 %%
 
@@ -200,114 +198,17 @@ comandos:
 ;
 
 linha:
-    TK_WHILE '(' expr ')' '{' comandos '}' {
-      char* start = novaLabel();
-      char* end   = novaLabel();
-      char* tr = malloc(strlen($3.traducao)
-                        + strlen($6.traducao) + 128);
-      sprintf(tr,
-        "%s:\n"                      /* Lstart: */
-        "%s"                         /* condição gera temp e código */
-        "    if (!%s) goto %s;\n"    /* se false, salta para Lend */
-        "%s"                         /* corpo do loop */
-        "    goto %s;\n"             /* volta a Lstart */
-        "%s:\n"                      /* Lend: */
-        , start
-        , $3.traducao
-        , $3.label
-        , end
-        , $6.traducao
-        , start
-        , end
-      );
-      $$.traducao = tr;
-      $$.label    = NULL;  /* não usamos label de expressão aqui */
-      $$.tipo     = BOOL;  /* tipo “dummy” para o bloco */
-  }
-  | TK_DO bloco_comandos TK_WHILE '(' expr ')' ';' {
-      /* 1. Cria um rótulo de início do loop */
-      char* start = novaLabel();
-
-      /* 2. Monta o código */
-      /* $2 = bloco_comandos, $5 = expr */
-      char* tr = malloc(
-           strlen(start) + 2
-         + strlen($2.traducao)
-         + strlen($5.traducao)
-         + 128
-      );
-      sprintf(tr,
-        "%s:\n"              /* Lstart: */
-        "%s"                 /* corpo do loop */
-        "%s"                 /* avaliação da condição */
-        "    if (%s) goto %s;\n"
-        , start
-        , $2.traducao
-        , $5.traducao
-        , $5.label
-        , start
-      );
-
-      /* 3. Preenche o union <atr> */
-      $$.traducao = tr;
-      $$.label    = NULL;     /* sem label de valor */
-      $$.tipo     = BOOL;     /* valor irrelevante aqui */
-  } 
-  | TK_FOR '(' expr ';' expr ';' expr ')' bloco_comandos {
-      /* rótulos */
-      char* start = novaLabel();
-      char* end   = novaLabel();
-      /* fixa tamanho suficiente */
-      char* tr = malloc(
-          strlen($3.traducao)   /* init */
-        + strlen($5.traducao)   /* cond */
-        + strlen($7.traducao)   /* incr */
-        + strlen($9.traducao)   /* corpo */
-        + 256
-      );
-      sprintf(tr,
-        "%s"                    /* init */
-        "%s:\n"                 /* Lstart: */
-        "%s"                    /* teste da condição */
-        "    if (!%s) goto %s;\n"
-        "%s"                    /* corpo do loop */
-        "%s"                    /* incremento */
-        "    goto %s;\n"
-        "%s:\n"                 /* Lend: */
-        , $3.traducao
-        , start
-        , $5.traducao
-        , $5.label, end
-        , $9.traducao
-        , $7.traducao
-        , start
-        , end
-      );
-      $$.traducao = tr;
-      $$.label    = NULL;
-      $$.tipo     = BOOL;
-  } 
-  | TK_PRINT '(' expr ')' ';' {
-      char* tr = malloc(strlen($3.traducao) + 64);
-      sprintf(tr,
-        "%s    printf(\"%%d\\n\", %s);\n",
-        $3.traducao,
-        $3.label
-      );
-      $$.traducao = tr;
-      $$.label    = NULL;
-      $$.tipo     = BOOL;  
+    sentenca { 
+        $$.traducao = $1.traducao; 
     }
   | expr ';' {
-        $$.label = $1.label;
         $$.traducao = $1.traducao;
-        $$.tipo     = $1.tipo;
+        $$.label = $1.label;
+        $$.tipo = $1.tipo;
     }
   | TK_TIPO_INT TK_ID ';' {
         declararVariavel($2, INT);
         $$.traducao = strdup("");
-        $$.label    = NULL;
-        $$.tipo     = INT;
     }
   | TK_TIPO_FLOAT TK_ID ';' {
         declararVariavel($2, FLOAT);
@@ -321,8 +222,92 @@ linha:
         declararVariavel($2, BOOL);
         $$.traducao = strdup("");
     }
-  | comando_if {
-        $$.traducao = $1.traducao;
+  | TK_PRINT '(' expr ')' ';' {
+      char* tr = malloc(strlen($3.traducao) + 64);
+      sprintf(tr, "%s    printf(\"%%d\\n\", %s);\n",
+        $3.traducao,
+        $3.label
+      );
+      $$.traducao = tr;
+    }
+;
+
+sentenca:
+    sentenca_fechada { $$.traducao = $1.traducao; }
+  | sentenca_aberta  { $$.traducao = $1.traducao; }
+;
+
+sentenca_fechada:
+    TK_IF '(' expr ')' sentenca_fechada TK_ELSE sentenca_fechada {
+        if ($3.tipo != BOOL) { yyerror("A condição de um if deve ser um valor booleano."); YYERROR; }
+        char* rotulo_else = novoRotulo();
+        char* rotulo_fim = novoRotulo();
+        char* tr = malloc(strlen($3.traducao) + strlen($5.traducao) + strlen($7.traducao) + 256);
+        sprintf(tr, "%s    if (!%s) goto %s;\n%s    goto %s;\n%s:\n%s%s:\n",
+                $3.traducao, $3.label, rotulo_else,
+                $5.traducao,
+                rotulo_fim,
+                rotulo_else,
+                $7.traducao,
+                rotulo_fim);
+        $$.traducao = tr;
+    }
+  | TK_WHILE '(' expr ')' sentenca_fechada {
+      char* start = novaLabel();
+      char* end   = novaLabel();
+      char* tr = malloc(strlen($3.traducao) + strlen($5.traducao) + 128);
+      sprintf(tr, "%s:\n%s    if (!%s) goto %s;\n%s    goto %s;\n%s:\n",
+              start, $3.traducao, $3.label, end, $5.traducao, start, end);
+      $$.traducao = tr;
+  }
+  | TK_SWITCH '(' expr ')' '{' case_clauses '}' {
+      if ($3.tipo != INT && $3.tipo != CHAR) {
+          yyerror("Expressão do switch deve ser do tipo int ou char.");
+          YYERROR;
+      }
+      char* tr = malloc(strlen($3.traducao) + strlen($6.traducao) + 128);
+      sprintf(tr, "%sswitch (%s) {\n%s}\n", $3.traducao, $3.label, $6.traducao);
+      $$.traducao = tr;
+      free($6.traducao); // Adicionado para liberar memória de case_clauses
+  }
+  | TK_FOR '(' expr ';' expr ';' expr ')' sentenca_fechada {
+      char* start = novaLabel();
+      char* end   = novaLabel();
+      char* tr = malloc(strlen($3.traducao) + strlen($5.traducao) + strlen($7.traducao) + strlen($9.traducao) + 256);
+      sprintf(tr, "%s%s:\n%s    if (!%s) goto %s;\n%s%s    goto %s;\n%s:\n",
+              $3.traducao, start, $5.traducao, $5.label, end, $9.traducao, $7.traducao, start, end);
+      $$.traducao = tr;
+  }
+  | TK_DO sentenca_fechada TK_WHILE '(' expr ')' ';' {
+      char* start = novaLabel();
+      char* tr = malloc(strlen($2.traducao) + strlen($5.traducao) + 128);
+      sprintf(tr, "%s:\n%s%s    if (%s) goto %s;\n",
+              start, $2.traducao, $5.traducao, $5.label, start);
+      $$.traducao = tr;
+  }
+  | bloco_comandos { $$.traducao = $1.traducao; }
+  ;
+
+sentenca_aberta:
+    TK_IF '(' expr ')' sentenca { // IF sem ELSE
+        if ($3.tipo != BOOL) { yyerror("A condição de um if deve ser um valor booleano."); YYERROR; }
+        char* rotulo_fim = novoRotulo();
+        char* tr = malloc(strlen($3.traducao) + strlen($5.traducao) + 128);
+        sprintf(tr, "%s    if (!%s) goto %s;\n%s%s:\n",
+                $3.traducao, $3.label, rotulo_fim,
+                $5.traducao,
+                rotulo_fim);
+        $$.traducao = tr;
+    }
+  | TK_IF '(' expr ')' sentenca_fechada TK_ELSE sentenca_aberta { // IF com ELSE aberto
+        if ($3.tipo != BOOL) { yyerror("A condição de um if deve ser um valor booleano."); YYERROR; }
+        char* rotulo_else = novoRotulo();
+        char* rotulo_fim = novoRotulo();
+        char* tr = malloc(strlen($3.traducao) + strlen($5.traducao) + strlen($7.traducao) + 256);
+        sprintf(tr, "%s    if (!%s) goto %s;\n%s    goto %s;\n%s:\n%s%s:\n",
+                $3.traducao, $3.label, rotulo_else, $5.traducao,
+                rotulo_fim, rotulo_else, $7.traducao, rotulo_fim);
+        $$.traducao = tr;
     }
 ;
 
@@ -336,41 +321,57 @@ bloco_comandos:
     }
 ;
 
-comando_if:
-    TK_IF '(' expr ')' bloco_comandos %prec LOWER_THAN_ELSE {
-        if ($3.tipo != BOOL) {
-            yyerror("A condição de um if deve ser um valor booleano.");
-            YYERROR;
-        }
-        char* rotulo_fim = novoRotulo();
-        char* tr = malloc(4096);
-
-        sprintf(tr, "%s    if_false %s goto %s\n%s%s:\n", 
-                $3.traducao, $3.label, rotulo_fim, 
-                $5.traducao, 
-                rotulo_fim);
-        
-        $$.traducao = tr;
+comandos_opt:
+    comandos {
+        // Se houver comandos, apenas passe a tradução para cima
+        $$.traducao = $1.traducao;
     }
+  | %empty {
+        // Se não houver comandos, crie uma string vazia
+        $$.traducao = strdup("");
+    }
+;
 
-  | TK_IF '(' expr ')' bloco_comandos TK_ELSE bloco_comandos {
-        if ($3.tipo != BOOL) {
-            yyerror("A condição de um if deve ser um valor booleano.");
-            YYERROR;
-        }
-        char* rotulo_else = novoRotulo();
-        char* rotulo_fim = novoRotulo();
-        char* tr = malloc(8192);
-
-        sprintf(tr, "%s    if_false %s goto %s\n%s    goto %s\n%s:\n%s%s:\n",
-                $3.traducao, $3.label, rotulo_else,
-                $5.traducao,
-                rotulo_fim,
-                rotulo_else,
-                $7.traducao,
-                rotulo_fim);
-
+case_clauses:
+    /* Uma lista de cláusulas case/default/break */
+    case_clauses case_clause {
+        // Concatena as cláusulas anteriores com a nova
+        char* tr = malloc(strlen($1.traducao) + strlen($2.traducao) + 1);
+        sprintf(tr, "%s%s", $1.traducao, $2.traducao);
         $$.traducao = tr;
+        free($1.traducao);
+        free($2.traducao);
+    }
+  | %empty {
+        $$.traducao = strdup("");
+    }
+;
+
+case_clause:
+    TK_CASE TK_NUM ':' comandos_opt { // Alterado para comandos_opt
+        char* tr = malloc(strlen($2) + strlen($4.traducao) + 16);
+        // Cuidado! O token de comandos agora é $4
+        sprintf(tr, "    case %s:\n%s", $2, $4.traducao);
+        $$.traducao = tr;
+        // Lembre-se de liberar a memória da sub-regra opcional
+        free($4.traducao);
+    }
+  | TK_CASE TK_CHAR ':' comandos_opt { // Alterado para comandos_opt
+        char* tr = malloc(strlen($2) + strlen($4.traducao) + 16);
+        // Cuidado! O token de comandos agora é $4
+        sprintf(tr, "    case %s:\n%s", $2, $4.traducao);
+        $$.traducao = tr;
+        free($4.traducao);
+    }
+  | TK_DEFAULT ':' comandos_opt { // Alterado para comandos_opt
+        char* tr = malloc(strlen($3.traducao) + 16);
+        // Cuidado! O token de comandos agora é $3
+        sprintf(tr, "    default:\n%s", $3.traducao);
+        $$.traducao = tr;
+        free($3.traducao);
+    }
+  | TK_BREAK ';' {
+        $$.traducao = strdup("        break;\n");
     }
 ;
 

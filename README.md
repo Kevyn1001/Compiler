@@ -42,16 +42,16 @@
 - [ ] **Estruturas de Bloco e Escopo:** Suporte para `{ ... }`, contexto e escopos (global/local).
 - [ ] **Estruturas de Controle:**
     - Comandos condicionais (`if`, `if-else`). ✅
-    - Comandos de repetição (`while`, `do-while`, `for`).
-    - Comando de seleção (`switch`).
+    - Comandos de repetição (`while`, `do-while`, `for`). ✅
+    - Comando de seleção (`switch`). ✅
     - Controle de laços (`break`, `continue`).
 - [ ] **Funções:** Declaração e chamada.
 - [ ] **Tipos de Dados Avançados:** Strings, concatenação e Vetores (arrays).
 - [ ] **Comandos de Entrada e Saída:** Funções como `read` ou `print`.
-- [ ] **Comentários:** Suporte para `//` e/ou `/* */`.
+- [x] **Comentários:** Suporte para `//` e/ou `/* */`. ✅
 - [ ] **Operadores Adicionais:** Operadores compostos (`+=`, `-=`) e negação unária (`-`).
 - [ ] **Inferência de Tipos:** (Recurso avançado).
-- [ ] **Tratamento de Erros Melhorado:** Mensagens mais claras e recuperação de erros.
+- [x] **Tratamento de Erros Melhorado:** Mensagens mais claras e recuperação de erros. ✅
 
 ---
 

@@ -6,6 +6,13 @@
 
 %%
 
+"//".*            { /* ignora comentário de linha até o fim */ }
+"/*"([^*]|\*+[^*/])*\*+"/" { /* ignora comentário em bloco */ }
+
+"switch"         { return TK_SWITCH; } 
+"case"           { return TK_CASE; }   
+"default"        { return TK_DEFAULT; }
+"break"          { return TK_BREAK; }
 "while"          { return TK_WHILE; }
 "do"             { return TK_DO; }
 "for"            { return TK_FOR; }
@@ -32,8 +39,7 @@
 "||"             { return TK_OR; }
 "!"              { return TK_NOT; }
 [+\-*/=]         { return *yytext; }
-[();]            { return *yytext; }
-[\{\}]           { return *yytext; }
+[();:{}]         { return *yytext; }
 [ \t\r\n]        ; // ignora espaços e quebras
 
 %%

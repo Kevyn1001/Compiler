@@ -1,4 +1,10 @@
+int sum;
+sum = 0;
 int i;
-for (i = 0; i < 5; i = i + 1) {
-    print(i);
+
+/* Soma 0+1+2+3+4 = 10 */
+for (i = 0; i < 9; i = i + 1) {
+    sum = sum + i;
 }
+
+print(sum);
