@@ -153,8 +153,8 @@ void yyerror(const char *s) { fprintf(stderr, "Erro: %s\n", s); }
     } atr;
 }
 
-%token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL TK_EQ TK_NE TK_LE TK_GE TK_LT TK_GT
-%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE TK_WHILE TK_PRINT TK_DO TK_FOR TK_SWITCH TK_CASE TK_DEFAULT TK_BREAK
+%token <label> TK_ID TK_NUM TK_REAL TK_CHAR TK_BOOL TK_EQ TK_NE TK_LE TK_GE TK_LT TK_GT 
+%token TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_CHAR TK_TIPO_BOOL TK_AND TK_OR TK_NOT TK_IF TK_ELSE TK_WHILE TK_PRINT TK_DO TK_FOR TK_SWITCH TK_CASE TK_DEFAULT TK_BREAK TK_READ
 %left TK_OR
 %left TK_AND
 %right TK_NOT
@@ -201,6 +201,21 @@ linha:
     sentenca { 
         $$.traducao = $1.traducao; 
     }
+  | TK_READ '(' TK_ID ')' ';' {
+    // garante que a variável exista
+    int idx = buscarSimbolo($3, buscarContexto($3));
+    if (idx == -1) {
+      yyerror("Variável para leitura não declarada");
+      YYERROR;
+    }
+    // determina formato a usar no scanf
+    int tipoVar = estado[buscarContexto($3)].tabela[idx].tipo;
+    const char *fmt = (tipoVar == FLOAT ? "%f" : (tipoVar == CHAR ? " %c" : "%d"));
+    // gera o código scanf
+    char *tr = malloc(strlen($3) + 32);
+    sprintf(tr, "    scanf(\"%s\", &%s);\n", fmt, $3);
+    $$.traducao = tr;
+  }  
   | expr ';' {
         $$.traducao = $1.traducao;
         $$.label = $1.label;

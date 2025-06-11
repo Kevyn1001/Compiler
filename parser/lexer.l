@@ -27,6 +27,7 @@
 "if"             { return TK_IF; }
 "else"           { return TK_ELSE; }
 "print"      		 { return TK_PRINT; }
+"read"            { return TK_READ; }
 [A-Za-z]([A-Za-z0-9])* { yylval.label = strdup(yytext); return TK_ID; }
 \'[A-Za-z0-9]\'  {yylval.label = strdup(yytext); return TK_CHAR; }
 "=="             { return TK_EQ; }
