@@ -1,3 +1,5 @@
+// ioCommands.cpp
+
 #include "../headers/ioCommands.hpp"
 #include "../headers/utils.hpp"
 #include "../headers/assignment.hpp"
@@ -23,7 +25,9 @@ string makeScan(Attribute value, string size)
     if(value.type != "string")
     { yyerror("This function with these parameters is only accepted for the string type."); }
 
-    return value.translation + "\t" + "cin.getline(" + value.label +", " + size + ");\n";
+    return value.label + " = new char[" + size + "];\n" +
+       value.translation + "\t" + "cin.getline(" + value.label + ", " + size + ");\n";
+
 }
 
 string makeScan(Attribute value)
@@ -31,7 +35,7 @@ string makeScan(Attribute value)
     validateInput(value);
 
     ScanHelper scanHelper = getScanHelper(value.type);
-    return value.translation + "\t" + "scanf(\"" + scanHelper.format + "\", " + scanHelper.addressOperador + value.label + "\"" + ");\n";
+    return value.translation + "\t" + "scanf(\"" + scanHelper.format + "\", " + scanHelper.addressOperador + value.label + ");\n";
 }
 
 ScanHelper getScanHelper(string key)

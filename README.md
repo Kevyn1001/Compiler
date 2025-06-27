@@ -22,20 +22,20 @@
 - [x] Relacionais: `<`, `<=`, `>`, `>=`, `==`, `!=` ✅
 
 ### Conversões
-- [ ] Conversão implícita
-- [ ] Conversão explícita
+- [x] Conversão implícita ✅
+- [x] Conversão explícita ✅
 
 ## 🚧 Partes futuras a implementar
-- [ ] Escopos e blocos
-- [ ] Strings e concatenação
-- [ ] Comandos de entrada e saída
-- [ ] Comandos condicionais e de repetição (`if`, `while`, `for`, `switch`)
-- [ ] Vetores
-- [ ] Comentários
-- [ ] Funções e chamadas
-- [ ] Operadores compostos e unários
+- [x] Escopos e blocos✅
+- [x] Strings e concatenação✅
+- [x] Comandos de entrada e saída✅
+- [x] Comandos condicionais e de repetição (`if`, `while`, `for`, `switch`)✅
+- [x] Vetores✅
+- [x] Comentários✅
+- [x] Funções e chamadas✅
+- [x] Operadores compostos e unários✅
 - [ ] Inferência de tipos
-- [ ] Detecção e tratamento de erros
+- [x] Detecção e tratamento de erros✅
 
 ---
 
@@ -46,19 +46,13 @@
 Use o comando abaixo para compilar automaticamente:
 
 ```bash
-make
-```
-### O binário será gerado com o nome compilador. Para executar:
-
-```bash
-./compilador
+make run
 ```
 
-### Limpando arquivos gerados
-Você pode usar o comando abaixo para limpar arquivos temporários e recompilar do zero:
+### O binário será gerado com o nome `glf`. Para executar o teste com geração de código intermediário:
 
 ```bash
-make clean
+make test
 ```
 
 ## Requisitos

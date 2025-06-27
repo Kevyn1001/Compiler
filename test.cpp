@@ -10,6 +10,7 @@
 
 using namespace std;
 
+int t8;
 int t7;
 int t5;
 int t4;
@@ -18,39 +19,38 @@ int t2;
 int t6;
 int t1;
 
-int* v1;
+int v1;
 int v2;
-int v3;
-int v4;
-int v5;
-int v6;
-int v7;
-int v8;
 
 
 int main(void)
 {
-	t1 = 5;
-	v1 = ( int* ) malloc( sizeof(int) * t1 );
+	v1 = 0; 
+	t1 = 20;
+	v1 = t1;
 	v2 = 0; 
-	v3 = 0; 
-	v4 = 0; 
-l1: 	t5 = t1;
-	t4 = v6 < t5;
-	t4 = !t4;
-	if( t4 ) goto l2;
-	t2 = 1;
-	v2 = (v2 + t2)  ;
-	v5 = v2;
-	v1 [ v4 ] = v5;
-	cout << v1 [ v4 ] << endl;
-	l3:
-	t7 = 1;
-	t5 = t1;
-	t4 = v6 < t5;
-	v6 = (v6 + t7)  ;
+	//*switch init*//
+	t2 = 10;
+	t3 = v1 == t2;
+	t3 = !t3;
+	if(t3) goto l3;
+	t4 = 3;
+	v2 = t4;
 	goto l1;
-l2:
+	l3:
+	t5 = 20;
+	t6 = v1 == t5;
+	t6 = !t6;
+	if(t6) goto l2;
+	t7 = 56;
+	v2 = t7;
+	goto l1;
+	l2:
+	//*default*//
+	t8 = 0;
+	v2 = t8;
+	l1:
+	//*switch end*//
 	return 0;
 }
 

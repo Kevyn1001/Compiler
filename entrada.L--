@@ -1,10 +1,19 @@
-integer vector[5];
-integer somador;
-integer result;
+integer x;
+ x = 20;
+ integer z;
 
-iterate (integer i : vector)
-{
-    somador++;
-    vector[i] = somador;
-    show(vector[i]);
-}
+ switch (x) 
+ {
+   case 10 :
+   { 
+     z = 3; 
+   }
+   case 20 :
+   { 
+     z = 56; 
+   }
+   default :
+   { 
+     z = 0;
+   }
+ }

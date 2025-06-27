@@ -9,11 +9,6 @@
  #### iterate (For)
 
  ```
- // Erro
- // Mensagem: ""
- ```
-
- ```
  // Correto
 
  integer i;
@@ -71,11 +66,6 @@
  #### during (While)
 
  ```
- // Erro
- // Mensagem: ""
- ```
-
- ```
  // Correto
 
  integer i;
@@ -93,11 +83,6 @@
  ```
 
  #### execute during (Do While)
-
- ```
- // Erro
- // Mensagem: ""
- ```
 
  ```
  // Correto 
