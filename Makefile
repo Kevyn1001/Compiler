@@ -3,20 +3,13 @@ all:
 	@lex lexica.l
 	@yacc -d sintatica.y
 
-lx: 
+run: all
 	@g++ -o glf y.tab.c src/*.cpp -ll
-	@./glf < code.bala
-
-mac:
-	@clear
-	@lex lexica.l
-	@yacc -d sintatica.y 	
-	@g++ -o glf y.tab.c -std=gnu++11
-	@./glf < code.bala
+	@./glf < entrada.L--
 
 test:
 	@reset
-	@./glf < code.bala debug.cpp | tee test.cpp
+	@./glf < entrada.L-- debug.cpp | tee test.cpp
 	@g++ test.cpp -o test
 	@echo "\nExecutando o codigo intermediario\n"
-	@./test | tee result.txt
+	@./test
