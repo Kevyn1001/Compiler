@@ -4,7 +4,7 @@
 
 | Reserved Word | Common Use | Obs |
 |--- |--- |--- |
-| inteirinho | int | --- |
+| integer | int | --- |
 
 
 ### Examples of Matrices
@@ -13,7 +13,7 @@
 // Error
 // Message: "The matrix column size must be an integer type."
 
-inteirinho matrix[1][2.8];
+integer matrix[1][2.8];
 
 matrix[1][1] = 8;
 ```
@@ -21,17 +21,7 @@ matrix[1][1] = 8;
 ```cpp
 // Correct
 
-inteirinho matrix[1][2];
-
-matrix[1][1] = 8;
-```
-
-
-```cpp
-// Correct
-
-inteirinho size = 2.80;
-inteirinho matrix[size][2];
+integer matrix[1][2];
 
 matrix[1][1] = 8;
 ```
@@ -40,7 +30,8 @@ matrix[1][1] = 8;
 ```cpp
 // Correct
 
-inteirinho matrix[3.5 como inteirinho][2];
+integer size = 2.80;
+integer matrix[size][2];
 
 matrix[1][1] = 8;
 ```
@@ -49,25 +40,34 @@ matrix[1][1] = 8;
 ```cpp
 // Correct
 
-inteirinho matrix[5][5];
-inteirinho somador;
-inteirinho result;
+integer matrix[3.5 como integer][2];
 
-forzinho (var i = 0; i < 5; i++)
+matrix[1][1] = 8;
+```
+
+
+```cpp
+// Correct
+
+integer matrix[5][5];
+integer somador;
+integer result;
+
+iterate (var i = 0; i < 5; i++)
 {
-    forzinho (var j = 0; j < 5; j++)
+    iterate (var j = 0; j < 5; j++)
     {
         somador++;
         matrix[i][j] = somador;
     }
 }
 
-forzinho (var i = 0; i < 5; i++)
+iterate (var i = 0; i < 5; i++)
 {
-    forzinho (var j = 0; j < 5; j++)
+    iterate (var j = 0; j < 5; j++)
     {
         result = matrix[i][j];
-        mostrar(result);
+        show(result);
     }
 }
 ```
@@ -75,8 +75,8 @@ forzinho (var i = 0; i < 5; i++)
 ```cpp
 // Correct
 
-inteirinho matrix[5][5];
+integer matrix[5][5];
 matrix[2][4] = 8;
-inteirinho result;
-mostrar(matrix[2][4]);
+integer result;
+show(matrix[2][4]);
 ```

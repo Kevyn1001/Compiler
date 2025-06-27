@@ -1,10 +1,10 @@
-inteirinho vector[5];
-inteirinho somador;
-inteirinho result;
+integer vector[5];
+integer somador;
+integer result;
 
-forzinho (inteirinho i : vector)
+iterate (integer i : vector)
 {
     somador++;
     vector[i] = somador;
-    mostrar(vector[i]);
+    show(vector[i]);
 }

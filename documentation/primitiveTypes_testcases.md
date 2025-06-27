@@ -4,11 +4,11 @@
 
 | Reserved Word | Common Use | Obs |
 |--- |--- |--- |
-| inteirinho | int | --- |
-| flutuante | float | --- |
-| caracter | char | --- |
-| boleano | bool | --- |
-| texto | string | --- |
+| integer | int | --- |
+| floating | float | --- |
+| letter | char | --- |
+| bolean | bool | --- |
+| text | string | --- |
 | var | var | type inference |
 
 
@@ -29,32 +29,32 @@ var valor = 60 + 4 - 90;
 // Error
 // Message: TK_ID 'f' is not declared. Please defines a type to 'f'.
 
-inteirinho a;
+integer a;
 a = 1;
 
-flutuante b;
+floating b;
 b = 3.5;
 
-boleano c;
+bolean c;
 c = verdadeiro;
 
-caracter d;
+letter d;
 f = 'G';
 ```
 
 ```cpp
 // Correct
 
-inteirinho a;
+integer a;
 a = 1;
 
-flutuante b;
+floating b;
 b = 3.5;
 
-boleano c;
+bolean c;
 c = verdadeiro;
 
-caracter d;
+letter d;
 d = 'G';
 ```
 
@@ -62,13 +62,13 @@ d = 'G';
 // Error
 // Message: The operation is not set to string and int
 
-texto aa;
+text aa;
 aa = "gabi";
 
-texto bb;
+text bb;
 bb = aa;
 
-inteirinho cc;
+integer cc;
 cc = 1;
 
 aa = cc;
@@ -77,9 +77,9 @@ aa = cc;
 ```cpp
 // Correct
 
-texto aa;
+text aa;
 aa = "gabi";
 
-texto bb;
+text bb;
 bb = aa;
 ```

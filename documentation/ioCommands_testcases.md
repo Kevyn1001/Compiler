@@ -4,9 +4,9 @@
 
 | Reserved Word | Common Use | Obs |
 |--- |--- |--- |
-| texto | string | --- |
-| ler | cout | --- |
-| mostrar | cin.getline | --- |
+| text | string | --- |
+| read | cout | --- |
+| show | cin.getline | --- |
 
 
 ### Examples of IO Commands
@@ -14,24 +14,24 @@
 ```cpp
 // Correct
 
-texto teste;
-ler(teste);
+text teste;
+read(teste);
 ```
 
 ```cpp
 // Error
 // Message: "This function with these parameters is only accepted for the string type."
 
-inteirinho teste;
-ler(teste, 60);
+integer teste;
+read(teste, 60);
 ```
 
 ```cpp
 // Error
 // Message: "This function with these parameters not accepted bool type."
 
-boleano teste;
-ler(teste);
+bolean teste;
+read(teste);
 ```
 
 
@@ -39,33 +39,33 @@ ler(teste);
 // Error
 // Message: "Variable not found."
 
-ler(teste);
+read(teste);
 ```
 
 ```cpp
 // Correct
 
-texto teste;
-ler(teste, 60);
+text teste;
+read(teste, 60);
 
-texto teste0;
-ler(teste0);
+text teste0;
+read(teste0);
 
 
-caracter teste1;
-ler(teste1);
+letter teste1;
+read(teste1);
 
-inteirinho teste2;
-ler(teste2);
+integer teste2;
+read(teste2);
 
-flutuante teste3;
-ler(teste3);
+floating teste3;
+read(teste3);
 ```
 
 ```cpp
 // Correct
 
-texto nome;
+text nome;
 nome = "gabi";
-mostrar(nome);
+show(nome);
 ```

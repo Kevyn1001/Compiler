@@ -5,11 +5,11 @@
 ### Types
 | Reserved Word | Common Use | Obs |
 |--- |--- |--- |
-| inteirinho | int | --- |
-| flutuante | float | --- |
-| caracter | char | --- |
-| boleano | bool | --- |
-| texto | string | --- |
+| integer | int | --- |
+| floating | float | --- |
+| letter | char | --- |
+| bolean | bool | --- |
+| text | string | --- |
 
 ### Logical operators
 | Reserved Word | Name | Obs |
@@ -56,9 +56,9 @@
 ```cpp
 // Correct
 
-inteirinho valor;
+integer valor;
 valor = 1;
-inteirinho var;
+integer var;
 var = !valor;
 
 ```
@@ -66,9 +66,9 @@ var = !valor;
 ```cpp
 // Correct
 
-inteirinho valor;
+integer valor;
 valor = 1;
-boleano var;
+bolean var;
 var = !valor;
 
 ```
@@ -76,9 +76,9 @@ var = !valor;
 ```cpp
 // Correct
 
-boleano valor;
+bolean valor;
 valor = 1;
-inteirinho var;
+integer var;
 var = !valor;
 
 ```
@@ -88,12 +88,12 @@ var = !valor;
 ```cpp
 // Correct
 
-texto a;
-texto b;
-texto c;
-texto d;
+text a;
+text b;
+text c;
+text d;
 
-a = "texto";
+a = "text";
 b = " da ";
 c = "gabi.";
 d = a + b + c;
@@ -105,12 +105,12 @@ d = a + b + c;
 ```cpp
 // Correct
 
-texto a;
-texto b;
-boleano c;
+text a;
+text b;
+bolean c;
 
-a = "texto.";
-b = "texto";
+a = "text.";
+b = "text";
 c = a >= b; // verdadeiro
 
 ```
@@ -118,12 +118,12 @@ c = a >= b; // verdadeiro
 ```cpp
 // Correct
 
-texto a;
-texto b;
-boleano c;
+text a;
+text b;
+bolean c;
 
-a = "texto";
-b = "texto";
+a = "text";
+b = "text";
 c = a == b; // verdadeiro
 
 ```
@@ -132,12 +132,12 @@ c = a == b; // verdadeiro
 ```cpp
 // Correct
 
-texto a;
-texto b;
-boleano c;
+text a;
+text b;
+bolean c;
 
-a = "texTo";
-b = "texto";
+a = "text";
+b = "text";
 c = a == b; // falso
 
 ```
@@ -148,8 +148,8 @@ c = a == b; // falso
 // Error
 // Message: syntax error 
 
-inteirinho a;
-inteirinho b;
+integer a;
+integer b;
 b = 30;
 
 a += b + 1;
@@ -159,47 +159,47 @@ a += b + 1;
 ```cpp
 // Correct
 
-inteirinho c;
-inteirinho d;
+integer c;
+integer d;
 c = 2;
 d = 30;
 
 c += d;
 
-mostrar(c); // 32
+show(c); // 32
 
 
 
-inteirinho e;
-inteirinho f;
+integer e;
+integer f;
 e = 3;
 f = 30;
 
 e -= f;
 
-mostrar(e); // -27
+show(e); // -27
 
 
 
-inteirinho g;
-inteirinho h;
+integer g;
+integer h;
 g = 4;
 h = 30;
 
 g *= h;
 
-mostrar(g); // 120
+show(g); // 120
 
 
 
-inteirinho i;
-inteirinho j;
+integer i;
+integer j;
 i = 5;
 j = 30;
 
 i /= j;
 
-mostrar(i); // 0
+show(i); // 0
 
 ```
 
@@ -208,32 +208,32 @@ mostrar(i); // 0
 ```cpp
 // Correct
 
-inteirinho a;
+integer a;
 a = 20;
 
 a ++;
 a --;
 
-mostrar(a); // 20
+show(a); // 20
 
-flutuante b;
+floating b;
 b = 10.5;
 
 b--;
 
-mostrar(b); // 9.5
+show(b); // 9.5
 
-caracter c;
+letter c;
 c = 'G';
 
 c--;
 
-mostrar(c); // F
+show(c); // F
 
-boleano d;
+bolean d;
 d = verdadeiro;
 
 d--;
-mostrar(d); // 0 == falso
+show(d); // 0 == falso
 
 ```

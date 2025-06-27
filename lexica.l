@@ -40,54 +40,54 @@ ID {LETTER}({LETTER}|{NUM})*
 [(){}[\]:,.'?]  {return *yytext;}
 
 
-";"     {return TK_SEMICOLON;}
+";"           {return TK_SEMICOLON;}
 
-"+"     {return TK_ADD;}
-"-"     {return TK_SUBTRACT;}
-"*"     {return TK_MULTIPLICATION;}
-"/"     {return TK_DIVISION;}
-"%"     {return TK_MODULE;}
+"+"           {return TK_ADD;}
+"-"           {return TK_SUBTRACT;}
+"*"           {return TK_MULTIPLICATION;}
+"/"           {return TK_DIVISION;}
+"%"           {return TK_MODULE;}
 
-"++"    {return TK_ADD_ADD;}
-"--"    {return TK_SUBTRACT_SUBTRACT;}
+"++"          {return TK_ADD_ADD;}
+"--"          {return TK_SUBTRACT_SUBTRACT;}
 
-"="     {return TK_ASSIGNMENT;}
-"+="    {return TK_ADD_ASSIGNMENT;}
-"-="    {return TK_SUBTRACT_ASSIGNMENT;}
-"*="    {return TK_MULTIPLICATION_ASSIGNMENT;}
-"/="    {return TK_DIVISION_ASSIGNMENT;}
+"="           {return TK_ASSIGNMENT;}
+"+="          {return TK_ADD_ASSIGNMENT;}
+"-="          {return TK_SUBTRACT_ASSIGNMENT;}
+"*="          {return TK_MULTIPLICATION_ASSIGNMENT;}
+"/="          {return TK_DIVISION_ASSIGNMENT;}
 
-">"     {return TK_BIG;}
-"<"     {return TK_SMALL;}
-"!="    {return TK_NOT_EQ;}
-">="    {return TK_BIG_EQ;}
-"<="    {return TK_SMALL_EQ;}
-"=="    {return TK_EQ;}
+">"           {return TK_BIG;}
+"<"           {return TK_SMALL;}
+"!="          {return TK_NOT_EQ;}
+">="          {return TK_BIG_EQ;}
+"<="          {return TK_SMALL_EQ;}
+"=="          {return TK_EQ;}
 
-"&&"    {return TK_AND;}
-"||"    {return TK_OR;}
-"!"     {return TK_NOT;}
+"&&"          {return TK_AND;}
+"||"          {return TK_OR;}
+"!"           {return TK_NOT;}
 
 
-"funcao"    {return TK_FUNCTION;}
+"funcao"      {return TK_FUNCTION;}
 
-"inteirinho"  {return TK_TYPE_INT;}
-"flutuante"   {return TK_TYPE_FLOAT;}
-"caracter"    {return TK_TYPE_CHAR;}
-"boleano"     {return TK_TYPE_BOOL;}
-"texto"       {return TK_TYPE_STRING;}
+"integer"     {return TK_TYPE_INT;}
+"floating"    {return TK_TYPE_FLOAT;}
+"letter"      {return TK_TYPE_CHAR;}
+"bolean"      {return TK_TYPE_BOOL;}
+"text"        {return TK_TYPE_STRING;}
 
 "var"         {return TK_VAR;}
 
 
 "como"        {return TK_EXPLICIT_CONVERTER;}
 
-"por acaso"   {return TK_IF;}
-"esquece"     {return TK_ELSE;}
+"check"       {return TK_IF;}
+"elsa"        {return TK_ELSE;}
 
-"forzinho"    {return TK_FOR;}
-"enquanto"    {return TK_WHILE;}
-"fazer"       {return TK_DO;}
+"iterate"     {return TK_FOR;}
+"during"      {return TK_WHILE;}
+"execute"     {return TK_DO;}
 
 "break"       {return TK_BREAK;}
 "continue"    {return TK_CONTINUE;}
@@ -96,10 +96,10 @@ ID {LETTER}({LETTER}|{NUM})*
 "case"        {return TK_CASE;}
 "default"     {return TK_DEFAULT;}
 
-"mostrar"     {return TK_PRINT;}
-"ler"         {return TK_SCAN;}
+"show"        {return TK_PRINT;}
+"read"        {return TK_SCAN;}
 
-"retorne"     {return TK_RETURN;}
+"returns"     {return TK_RETURN;}
 
 
 {LINE_COMMENT}              {yylval.label = yytext; return TK_LINE_COMMENT;}

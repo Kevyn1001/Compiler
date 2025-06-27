@@ -4,9 +4,9 @@
 
 | Reserved Word | Common Use | Obs |
 |--- |--- |--- |
-| inteirinho | int | --- |
-| flutuante | float | --- |
-| texto | string | --- |
+| integer | int | --- |
+| floating | float | --- |
+| text | string | --- |
 | var | var | type inference |
 | funcao | function | --- |
 
@@ -20,10 +20,10 @@
 ```cpp
 //Correct
 
-funcao flutuante c (flutuante a, inteirinho b)
+funcao floating c (floating a, integer b)
 {
     var result = a + b;
-    retorne result;
+    returns result;
 }
 ```
 
@@ -31,15 +31,15 @@ Access variable 'b' from outside scope.
 ```cpp
 // Correct 
 
-funcao flutuante c (flutuante b, inteirinho d, texto e)
+funcao floating c (floating b, integer d, text e)
 {
     b = 3;
-    retorne b;
+    returns b;
 
-    funcao flutuante c (flutuante k, inteirinho d)
+    funcao floating c (floating k, integer d)
     {
         b = 3;
-        retorne b;
+        returns b;
     }
 }
 ```
@@ -48,15 +48,15 @@ Access variable 'b' from current scope.
 ```cpp
 // Correct 
 
-funcao flutuante c (flutuante b, inteirinho d, texto e)
+funcao floating c (floating b, integer d, text e)
 {
     b = 3;
-    retorne b;
+    returns b;
 
-    funcao flutuante c (flutuante k, inteirinho b)
+    funcao floating c (floating k, integer b)
     {
         b = 3;
-        retorne b;
+        returns b;
     }
 }
 ```
@@ -66,15 +66,15 @@ funcao flutuante c (flutuante b, inteirinho d, texto e)
 ```cpp
 // Correct
 
-funcao flutuante c (flutuante b, inteirinho d, texto e)
+funcao floating c (floating b, integer d, text e)
 {
     b = 3;
-    retorne b;
+    returns b;
 
-    funcao flutuante c (flutuante b, texto e, inteirinho d)
+    funcao floating c (floating b, text e, integer d)
     {
         b = 3;
-        retorne b;
+        returns b;
     }
 }
 ```
@@ -87,30 +87,30 @@ funcao flutuante c (flutuante b, inteirinho d, texto e)
 // Error
 // Message: "Function c (float, float); is not found."
 
-funcao flutuante c (flutuante a, inteirinho b)
+funcao floating c (floating a, integer b)
 {
     var result = a + b;
-    retorne result;
+    returns result;
 }
 
-caracter a;
+letter a;
 a = c (2.9, 5.8);
-mostrar(a);
+show(a);
 
 ```
 
 ```cpp
 // Correct
 
-funcao flutuante c (flutuante a, inteirinho b)
+funcao floating c (floating a, integer b)
 {
     var result = a + b;
-    retorne result;
+    returns result;
 }
 
-inteirinho a;
+integer a;
 a = c (2.9, 5);
-mostrar(a); // 7
+show(a); // 7
 
 ```
 
@@ -118,14 +118,14 @@ mostrar(a); // 7
 // Error
 // Message: "Cannot convert type char to type float."
 
-funcao flutuante c (flutuante a, inteirinho b)
+funcao floating c (floating a, integer b)
 {
     var result = a + b;
-    retorne result;
+    returns result;
 }
 
-caracter a;
+letter a;
 a = c (2.9, 5);
-mostrar(a);
+show(a);
 
 ```

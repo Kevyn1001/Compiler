@@ -4,13 +4,13 @@
 
 | Reserved Word | Common Use | Obs |
 |--- |--- |--- |
-| inteirinho | int | --- |
-| forzinho | for | --- |
-| enquanto | while | --- |
+| integer | int | --- |
+| iterate | for | --- |
+| during | while | --- |
 
 ### Examples of Loops
 
-#### Forzinho (For)
+#### iterate (For)
 
 ```cpp
 // Error
@@ -21,10 +21,10 @@
 ```cpp
 // Correct
 
-inteirinho i;
-inteirinho somador;
+integer i;
+integer somador;
 
-forzinho (i; i < 10; i = i + 1)
+iterate (i; i < 10; i = i + 1)
 {
   somador = somador + 1;
 }
@@ -33,48 +33,48 @@ forzinho (i; i < 10; i = i + 1)
 ```cpp
 // Correct
 
-inteirinho matrix[5][5];
-inteirinho somador;
-inteirinho result;
+integer matrix[5][5];
+integer somador;
+integer result;
 
-forzinho (var i = 0; i < 5; i++)
+iterate (var i = 0; i < 5; i++)
 {
-    forzinho (var j = 0; j < 5; j++)
+    iterate (var j = 0; j < 5; j++)
     {
         somador++;
         matrix[i][j] = somador;
     }
 }
 
-forzinho (var i = 0; i < 5; i++)
+iterate (var i = 0; i < 5; i++)
 {
-    forzinho (var j = 0; j < 5; j++)
+    iterate (var j = 0; j < 5; j++)
     {
         result = matrix[i][j];
-        mostrar(result);
+        show(result);
     }
 }
 ```
 
-#### Forzinho Foreach (For)
+#### iterate Foreach (For)
 ```cpp
 // Correct
 
-inteirinho vector[5];
-inteirinho somador;
-inteirinho result;
+integer vector[5];
+integer somador;
+integer result;
 
-forzinho (inteirinho i : vector)
+iterate (integer i : vector)
 {
     somador++;
     vector[i] = somador;
-    mostrar(vector[i]);
+    show(vector[i]);
 }
 
 ```
 
 
-#### Enquanto (While)
+#### during (While)
 
 ```cpp
 // Error
@@ -85,12 +85,12 @@ forzinho (inteirinho i : vector)
 ```cpp
 // Correct
 
-inteirinho i;
-inteirinho k;
+integer i;
+integer k;
 k = 10;
-inteirinho somador;
+integer somador;
 
-enquanto (i <= k)
+during (i <= k)
 {
   somador = i + 2;
   i = i + 1;
@@ -100,7 +100,7 @@ k = 0;
 ```
 
 
-#### Fazer Enquanto (Do While)
+#### execute during (Do While)
 
 ```cpp
 // Error
@@ -111,15 +111,15 @@ k = 0;
 ```cpp
 // Correct 
 
-inteirinho i;
-inteirinho k;
+integer i;
+integer k;
 k = 10;
 
-inteirinho somador;
+integer somador;
 
-fazer 
+execute 
 {
   i = i + 1;
 }
-enquanto(i <= k)
+during(i <= k)
 ```

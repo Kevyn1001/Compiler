@@ -4,8 +4,8 @@
 
 | Reserved Word | Common Use | Obs |
 |--- |--- |--- |
-| inteirinho | int | --- |
-| flutuante | float | --- |
+| integer | int | --- |
+| floating | float | --- |
 | como | as | --- |
 
 
@@ -14,12 +14,12 @@
 ```cpp
 // Correct
 
-flutuante valor;
+floating valor;
 valor = 10.50;
 
 {
-	inteirinho var;
-	var = valor como inteirinho - 20;
+	integer var;
+	var = valor como integer - 20;
 }
 
 ```

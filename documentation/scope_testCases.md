@@ -4,7 +4,7 @@
 
 | Reserved Word | Common Use | Obs |
 |--- |--- |--- |
-| inteirinho | int | --- |
+| integer | int | --- |
 
 
 ### Examples of Scope
@@ -13,20 +13,20 @@
 // Error
 // Message: "Error! TK_ID 'i' declared twice."
 
-inteirinho i;
+integer i;
 i = 1;
 
-inteirinho i;
+integer i;
 ```
 
 ```cpp
 // Correct
 
-inteirinho i;
+integer i;
 i = 1;
 
 {
-  inteirinho i;
+  integer i;
   i = 2;
 }
 ```

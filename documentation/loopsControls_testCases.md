@@ -4,10 +4,10 @@
 
 | Reserved Word | Common Use | Obs |
 |--- |--- |--- |
-| inteirinho | int | --- |
-| flutuante | float | --- |
-| forzinho | for | --- |
-| enquanto | while | --- |
+| integer | int | --- |
+| floating | float | --- |
+| iterate | for | --- |
+| during | while | --- |
 
 ### Examples of Loops Control
 
@@ -16,10 +16,10 @@
 ```cpp
 // Correct
 
-inteirinho i;
-inteirinho somador;
+integer i;
+integer somador;
 
-forzinho (i; i < 10; i = i + 1)
+iterate (i; i < 10; i = i + 1)
 {
   somador = somador + 1;
   break;
@@ -29,12 +29,12 @@ forzinho (i; i < 10; i = i + 1)
 ```cpp
 // Correct
 
-inteirinho i;
-inteirinho k;
+integer i;
+integer k;
 k = 10;
-inteirinho somador;
+integer somador;
 
-enquanto (i >= k)
+during (i >= k)
 {
   somador = i + 2;
   break;
@@ -48,18 +48,18 @@ k = 0;
 ```cpp
 // Correct 
 
-inteirinho i;
-inteirinho k;
+integer i;
+integer k;
 k = 10;
 
-inteirinho somador;
+integer somador;
 
-fazer 
+execute 
 {
   i = i + 1;
   break;
 }
-enquanto(i <= k)
+during(i <= k)
 ```
 
 
@@ -69,18 +69,18 @@ enquanto(i <= k)
 ```cpp
 // Correct
 
-inteirinho i;
-flutuante num;
-inteirinho valor;
+integer i;
+floating num;
+integer valor;
 
-forzinho (i; i < 10; i = i + 1)
+iterate (i; i < 10; i = i + 1)
 {  
-  por acaso(num == 2.0)
+  check(num == 2.0)
   {
     valor = 20;
     break;
   }
-  esquece
+  elsa
   {
     valor = 30;
   }
@@ -93,16 +93,16 @@ forzinho (i; i < 10; i = i + 1)
 // Correct
 
 
-inteirinho i;
-inteirinho k;
+integer i;
+integer k;
 k = 50;
-inteirinho somador;
-inteirinho valor;
+integer somador;
+integer valor;
 
-enquanto (i <= k)
+during (i <= k)
 {
   i = i + 1;
-  por acaso (i == 5)
+  check (i == 5)
   {
     i = 50;
     continue;
@@ -117,16 +117,16 @@ k = 0;
 ```cpp
 // Correct 
 
-inteirinho i;
-inteirinho k;
+integer i;
+integer k;
 k = 10;
 
-inteirinho somador;
+integer somador;
 
-fazer 
+execute 
 {
   continue;
   i = i + 1;
 }
-enquanto(i <= k)
+during(i <= k)
 ```

@@ -4,9 +4,9 @@
 
 | Reserved Word | Common Use | Obs |
 |--- |--- |--- |
-| inteirinho | int | --- |
-| flutuante | float | --- |
-| caracter | char | --- |
+| integer | int | --- |
+| floating | float | --- |
+| letter | char | --- |
 
 
 ### Examples of Implicit Convercion
@@ -15,13 +15,13 @@
 // Error
 // Message: "Cannot convert type float to type char.
 
-caracter aaa;
+letter aaa;
 aaa = 'g';
-inteirinho bbb;
+integer bbb;
 bbb = 10;
 
 {
-	flutuante i;
+	floating i;
 	i = 1.9;
 
 	i = aaa;
@@ -31,13 +31,13 @@ bbb = 10;
 ```cpp
 // Correct
 
-caracter aaa;
+letter aaa;
 aaa = 'g';
-inteirinho bbb;
+integer bbb;
 bbb = 10;
 
 {
-	flutuante i;
+	floating i;
 	i = 1.9;
 
 	i = bbb;

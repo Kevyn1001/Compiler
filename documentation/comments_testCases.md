@@ -4,8 +4,8 @@
 
 | Reserved Word | Common Use | Obs |
 |--- |--- |--- |
-| caracter | char | --- |
-| boleano | bool | --- |
+| letter | char | --- |
+| bolean | bool | --- |
 | // | // | line comment |
 | <\!--""--> | /\*\*/ | multi-line comment |
 
@@ -15,18 +15,18 @@
 ```cpp
 // Correct
 
-caracter c;
+letter c;
 c = 'G';
 
 c--;
 
 <!--"
-boleano d;
+bolean d;
 d = verdadeiro;
 
 d--;
-mostrar(d);  0 == falso "-->
+show(d);  0 == falso "-->
 
-mostrar(c); // F
+show(c); // F
 
 ```
