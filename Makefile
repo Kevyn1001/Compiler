@@ -1,31 +1,18 @@
-# Caminhos
-SRC_DIR = src
-PARSER_DIR = parser
+.PHONY: all run test
 
-# Arquivos fonte
-LEX_FILE = $(PARSER_DIR)/lexer.l
-YACC_FILE = $(PARSER_DIR)/parser.y
-MAIN_FILE = $(SRC_DIR)/main.c
+all: 	
+	@clear
+	@lex lexica.l
+	@yacc -d sintatica.y
 
-# Arquivos gerados
-LEX_GEN = $(PARSER_DIR)/lex.yy.c
-YACC_GEN_C = $(PARSER_DIR)/parser.tab.c
-YACC_GEN_H = $(PARSER_DIR)/parser.tab.h
+run: all
+	@g++ -o compilador y.tab.c src/*.cpp -ll
+	@./compilador < entrada.L--
 
-# Nome do executável
-EXEC = compilador
-
-# Regra padrão
-all: $(EXEC)
-
-$(YACC_GEN_C) $(YACC_GEN_H): $(YACC_FILE)
-	bison -d -o $(YACC_GEN_C) $(YACC_FILE)
-
-$(LEX_GEN): $(LEX_FILE)
-	flex -o $(LEX_GEN) $(LEX_FILE)
-
-$(EXEC): $(MAIN_FILE) $(YACC_GEN_C) $(LEX_GEN)
-	gcc -o $(EXEC) $(MAIN_FILE) $(YACC_GEN_C) $(LEX_GEN)
-
-clean:
-	rm -f $(EXEC) $(LEX_GEN) $(YACC_GEN_C) $(YACC_GEN_H)
+test:
+	@reset
+	@rm -f test
+	@./compilador < entrada.L-- debug.cpp | tee test.cpp
+	@g++ test.cpp -o test
+	@echo "\nExecutando o codigo intermediario\n"
+	@./test

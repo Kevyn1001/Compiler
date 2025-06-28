@@ -1,0 +1,19 @@
+integer x;
+ x = 20;
+ integer z;
+
+ switch (x) 
+ {
+   case 10 :
+   { 
+     z = 3; 
+   }
+   case 20 :
+   { 
+     z = 56; 
+   }
+   default :
+   { 
+     z = 0;
+   }
+ }
