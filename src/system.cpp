@@ -9,7 +9,7 @@ extern vector<Symbol> allSymbols;
 string iniciate()
 {
   string libs = 
-  "\n#include<iostream>\n#include<string.h>\n#include<stdio.h>\n";
+  "\n#include<iostream>\n#include<string.h>\n#include<stdio.h>\n#include <cmath>\n";
 
   return libs 
   + getDefines() 

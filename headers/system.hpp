@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <unordered_map>
+#include <cmath>
 #include "utils.hpp"
 #include "type.hpp"
 #include "symbols.hpp"

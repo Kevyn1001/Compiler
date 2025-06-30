@@ -44,6 +44,7 @@ ID {LETTER}({LETTER}|{NUM})*
 
 "+"           {return TK_ADD;}
 "-"           {return TK_SUBTRACT;}
+"^"           { return TK_EXPONENT; }
 "*"           {return TK_MULTIPLICATION;}
 "/"           {return TK_DIVISION;}
 "%"           {return TK_MODULE;}

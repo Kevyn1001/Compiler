@@ -1,4 +1,4 @@
-# Compilador
+# Compilador L--
 
 ## ✅ Parte I – Implementado
 - [x] Declaração de variáveis ✅
@@ -36,6 +36,11 @@
 - [x] Operadores compostos e unários✅
 - [ ] Inferência de tipos
 - [x] Detecção e tratamento de erros✅
+
+## Extras:
+- [x] ForEach
+- [x] Exponenciação
+- [] Matriz Regular
 
 ---
 
