@@ -15,6 +15,7 @@ int yylex(void);
 %token TK_EXPLICIT_CONVERTER
 %token TK_NUM TK_REAL TK_CHAR TK_BOOL TK_STRING
 %token TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_BOOL TK_TYPE_CHAR TK_TYPE_STRING TK_VAR
+%token TK_EXPONENT
 %token TK_BIG TK_SMALL TK_NOT_EQ TK_BIG_EQ TK_SMALL_EQ TK_EQ
 %token TK_AND TK_OR TK_NOT
 %token TK_IF TK_ELSE
@@ -43,6 +44,7 @@ int yylex(void);
 %left TK_MODULE
 %left TK_ADD TK_SUBTRACT
 %left TK_MULTIPLICATION TK_DIVISION
+%right TK_EXPONENT
 %left '(' ')'
 
 %nonassoc NO_ELSE
@@ -299,7 +301,12 @@ E:
 								};
 //------------------------------------------------------------------------------
 ARITHMETIC:
-								E TK_MULTIPLICATION E
+								
+								E TK_EXPONENT E
+								{
+									$$ = makeExponent($1, $3);
+								}
+								| E TK_MULTIPLICATION E
 								{
 									$$ = makeExpression($1, "*", $3);
 								}

@@ -141,6 +141,11 @@ void iniciateCoercionTable()
 	coercionTable[generateKey("string", ">", "string")] = {"bool","string"};
 	coercionTable[generateKey("string", "<=", "string")] = {"bool","string"};
 	coercionTable[generateKey("string", ">=", "string")] = {"bool","string"};
+
+	coercionTable[generateKey("int", "^", "int")]    = {"int",   "int"};
+  coercionTable[generateKey("int", "^", "float")]  = {"float", "float"};
+  coercionTable[generateKey("float", "^", "int")]  = {"float", "float"};
+  coercionTable[generateKey("float", "^", "float")] = {"float", "float"};
 }
 
 //------------------------------------------------------------------------------
