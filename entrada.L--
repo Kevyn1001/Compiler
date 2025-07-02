@@ -1,8 +1,7 @@
-integer i;
- integer somador;
-
- iterate (i; i < 10; i = i + 1)
- {
-   somador = somador + 1;
-   break;
- }
+integer a;
+a = 2;
+integer b;
+b = 3;
+integer c;
+c = a ^ b;
+show(c);

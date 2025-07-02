@@ -285,7 +285,7 @@ E:
 								}
 								| E TK_EXPLICIT_CONVERTER TYPE
 								{
-									$$ = resolveConversaoExplicita($1, $3);
+									$$ = ConversaoExplicita($1, $3);
 								}
 								| CALL_FUNCTION
 								{
@@ -652,7 +652,7 @@ int yyparse();
 
 int main( int argc, char* argv[] )
 {
-	iniciarCoercionTable();
+	iniciarCoercaoTable();
 	iniciateScanHelperTable();
 	iniciarStringExpressionHelperTable();
 	

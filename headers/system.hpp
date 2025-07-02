@@ -7,7 +7,7 @@
 #include "utils.hpp"
 #include "type.hpp"
 #include "symbols.hpp"
-#include "coercion.hpp"
+#include "coercao.hpp"
 #include "assignment.hpp"
 #include "expression.hpp"
 #include "explicitConversion.hpp"

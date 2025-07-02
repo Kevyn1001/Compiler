@@ -1,16 +1,16 @@
-#ifndef COERCION_H
-#define COERCION_H
+#ifndef COERCAO_H
+#define COERCAO_H
 
 #include <string>
 #include <map>
 
 using namespace std;
 
-typedef struct coercion
+typedef struct coercao
 {
   string returnedType;
   string conversionType;
-} Coercion;
+} Coercao;
 
 typedef struct stringExpressionHelper
 {
@@ -20,16 +20,16 @@ typedef struct stringExpressionHelper
 
 
 typedef tuple<string, string, string> TripleKey;
-extern map<TripleKey, Coercion> coercionTable;
+extern map<TripleKey, Coercao> coercaoTable;
 extern map<string, StringExpressionHelper> stringExpressionHelperTable;
 
 
 TripleKey generateKey(string , string, string);
-void iniciarCoercionTable();
-Coercion getCoercion(string type1, string operation, string type2);
+void iniciarCoercaoTable();
+Coercao getCoercao(string type1, string operation, string type2);
 
-Coercion resolveString(string type1, string operation, string type2);
-Coercion resolveDefault(string type1, string operation, string type2);
+Coercao resolveString(string type1, string operation, string type2);
+Coercao resolveDefault(string type1, string operation, string type2);
 
 void iniciarStringExpressionHelperTable();
 StringExpressionHelper getStringExpressionHelper(string operation);

@@ -5,7 +5,7 @@
 #include "../headers/symbols.hpp"
 #include "../headers/type.hpp"
 #include "../headers/scope.hpp"
-#include "../headers/coercion.hpp"
+#include "../headers/coercao.hpp"
 
 
 using namespace std;
@@ -77,8 +77,8 @@ Attribute makeReturn(Attribute actual, Attribute expression)
 	}
 	else
 	{
-		Coercion coercion = getCoercion(typeFunction, "=", expression.type);
-		actual.translation += "\treturn (" + coercion.conversionType + ") " + expression.label+ ";\n";
+		Coercao coercao = getCoercao(typeFunction, "=", expression.type);
+		actual.translation += "\treturn (" + coercao.conversionType + ") " + expression.label+ ";\n";
 	}
 	return actual;
 }
