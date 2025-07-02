@@ -1,7 +1,9 @@
-integer a;
-a = 2;
-integer b;
-b = 3;
-integer c;
-c = a ^ b;
-show(c);
+ funcao floating c (floating a, integer b)
+ {
+     var result = a + b;
+     returns result;
+ }
+
+ integer a;
+ a = c (2.9, 5);
+ show(a);
