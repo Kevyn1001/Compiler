@@ -18,7 +18,7 @@ VariableTable popScope(StackMapPtr stack)
 {
   if(stack->scopes.empty())
   {
-    cout << "POP_FUNCTION: There are no scopes to be removed." << endl;
+    cout << "POP_FUNCTION: Não há escopos a serem removidos." << endl;
     exit(-1); 
   }
 
@@ -56,7 +56,7 @@ Symbol createVariableNameToSymbol (string label, string type, Attribute actual)
 }
 
 
-Symbol addSymbolInScope (StackMapPtr stack, string label, string type, Attribute actual)
+Symbol addSimboloScope (StackMapPtr stack, string label, string type, Attribute actual)
 {
   Symbol symbol = createVariableNameToSymbol(label, type, actual);
 	stack->scopes[stack->actualScope][label] = symbol;
@@ -65,7 +65,7 @@ Symbol addSymbolInScope (StackMapPtr stack, string label, string type, Attribute
   return symbol;
 }
 
-Symbol addSymbolInSuperiorScope (StackMapPtr stack, string label, string type, Attribute actual)
+Symbol addSimboloScopeSuperior (StackMapPtr stack, string label, string type, Attribute actual)
 {
   Symbol symbol = createVariableNameToSymbol(label, type, actual);
   stack->scopes[stack->actualScope - 1][label] = symbol;
@@ -74,7 +74,7 @@ Symbol addSymbolInSuperiorScope (StackMapPtr stack, string label, string type, A
   return symbol;
 }
 
-Symbol addSymbolInGlobalScope (StackMapPtr stack, string label, string type, Attribute actual)
+Symbol addSimboloScopeGlobal (StackMapPtr stack, string label, string type, Attribute actual)
 {
   Symbol symbol = createVariableNameToSymbol(label, type, actual);
 	stack->scopes[0][symbol.label] = symbol;
@@ -85,7 +85,7 @@ Symbol addSymbolInGlobalScope (StackMapPtr stack, string label, string type, Att
 
 
 
-Symbol getSymbolAnywere(string label)
+Symbol getSimboloAnywere(string label)
 {
 	for (int i = StackContext->actualScope; i >= 0 ; i--)
   {
@@ -99,7 +99,7 @@ Symbol getSymbolAnywere(string label)
 	return createSymbol("","", "");
 }
 
-Symbol getSymbolTop(string label)
+Symbol getSimboloTop(string label)
 {
 	VariableTable top = StackContext->scopes.back();
 	if (top.find(label) != top.end())
@@ -109,7 +109,7 @@ Symbol getSymbolTop(string label)
 	return createSymbol("", "", "");
 }
 
-Symbol getSymbolGlobal(string label)
+Symbol getSimboloGlobal(string label)
 {
 	VariableTable posAtual = StackContext->scopes[0];
 

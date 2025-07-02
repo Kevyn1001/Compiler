@@ -43,20 +43,20 @@ ID {LETTER}({LETTER}|{NUM})*
 ";"           {return TK_SEMICOLON;}
 
 "+"           {return TK_ADD;}
-"-"           {return TK_SUBTRACT;}
-"^"           { return TK_EXPONENT; }
-"*"           {return TK_MULTIPLICATION;}
-"/"           {return TK_DIVISION;}
+"-"           {return TK_SUB;}
+"^"           { return TK_EXPONENCIAL; }
+"*"           {return TK_MULTIPLICACAO;}
+"/"           {return TK_DIVISAO;}
 "%"           {return TK_MODULE;}
 
 "++"          {return TK_ADD_ADD;}
-"--"          {return TK_SUBTRACT_SUBTRACT;}
+"--"          {return TK_SUB_SUB;}
 
-"="           {return TK_ASSIGNMENT;}
-"+="          {return TK_ADD_ASSIGNMENT;}
-"-="          {return TK_SUBTRACT_ASSIGNMENT;}
-"*="          {return TK_MULTIPLICATION_ASSIGNMENT;}
-"/="          {return TK_DIVISION_ASSIGNMENT;}
+"="           {return TK_ATRIBUICAO;}
+"+="          {return TK_ADD_ATRIBUICAO;}
+"-="          {return TK_SUB_ATRIBUICAO;}
+"*="          {return TK_MULTI_ATRIBUICAO;}
+"/="          {return TK_DIV_ATRIBUICAO;}
 
 ">"           {return TK_BIG;}
 "<"           {return TK_SMALL;}
@@ -70,7 +70,7 @@ ID {LETTER}({LETTER}|{NUM})*
 "!"           {return TK_NOT;}
 
 
-"funcao"      {return TK_FUNCTION;}
+"funcao"      {return TK_FUNCAO;}
 
 "integer"     {return TK_TYPE_INT;}
 "floating"    {return TK_TYPE_FLOAT;}

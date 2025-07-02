@@ -15,7 +15,7 @@ int yylex(void);
 %token TK_EXPLICIT_CONVERTER
 %token TK_NUM TK_REAL TK_CHAR TK_BOOL TK_STRING
 %token TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_BOOL TK_TYPE_CHAR TK_TYPE_STRING TK_VAR
-%token TK_EXPONENT
+%token TK_EXPONENCIAL
 %token TK_BIG TK_SMALL TK_NOT_EQ TK_BIG_EQ TK_SMALL_EQ TK_EQ
 %token TK_AND TK_OR TK_NOT
 %token TK_IF TK_ELSE
@@ -25,14 +25,14 @@ int yylex(void);
 %token TK_BREAK TK_CONTINUE
 
 %token TK_SEMICOLON
-%token TK_ADD_ADD TK_SUBTRACT_SUBTRACT
-%token TK_ASSIGNMENT
-%token TK_ADD_ASSIGNMENT TK_SUBTRACT_ASSIGNMENT TK_MULTIPLICATION_ASSIGNMENT TK_DIVISION_ASSIGNMENT
-%token TK_ADD TK_SUBTRACT TK_MULTIPLICATION TK_DIVISION TK_MODULE
+%token TK_ADD_ADD TK_SUB_SUB
+%token TK_ATRIBUICAO
+%token TK_ADD_ATRIBUICAO TK_SUB_ATRIBUICAO TK_MULTI_ATRIBUICAO TK_DIV_ATRIBUICAO
+%token TK_ADD TK_SUB TK_MULTIPLICACAO TK_DIVISAO TK_MODULE
 
 %token TK_LINE_COMMENT 
 %token TK_START_MULTI_LINE_COMMENT TK_END_MULTI_LINE_COMMENT
-%token TK_RETURN TK_FUNCTION
+%token TK_RETURN TK_FUNCAO
 
 
 %start S
@@ -42,9 +42,9 @@ int yylex(void);
 %left TK_NOT
 %left TK_SMALL TK_BIG TK_NOT_EQ TK_EQ TK_BIG_EQ TK_SMALL_EQ
 %left TK_MODULE
-%left TK_ADD TK_SUBTRACT
-%left TK_MULTIPLICATION TK_DIVISION
-%right TK_EXPONENT
+%left TK_ADD TK_SUB
+%left TK_MULTIPLICACAO TK_DIVISAO
+%right TK_EXPONENCIAL
 %left '(' ')'
 
 %nonassoc NO_ELSE
@@ -181,13 +181,13 @@ DECLARATION:
 								};
 //------------------------------------------------------------------------------
 DECLARATION_WITH_ASSIGNMENT:
-								DECLARATION TK_ASSIGNMENT E
+								DECLARATION TK_ATRIBUICAO E
 								{
-									$$ = makeAssignment($$, $1, $3, "=");
+									$$ = makeAtribuicao($$, $1, $3, "=");
 								}
-								| TK_VAR TK_ID TK_ASSIGNMENT E
+								| TK_VAR TK_ID TK_ATRIBUICAO E
 								{
-									$$ = makeDeclarationWithAssignmentVar($$, $2, $4, "=");
+									$$ = makeDeclaracaoVarAtribuicao($$, $2, $4, "=");
 								}
 								| DECLARATION_WITH_ASSIGNMENT_VECTOR
 								{
@@ -209,37 +209,37 @@ OPERATORS:
 								};
 
 COMPOUSED_OPERATOR:
-								TK_ID TK_ADD_ASSIGNMENT TK_ID
+								TK_ID TK_ADD_ATRIBUICAO TK_ID
 								{
-									$$ = makeCompousedOperator($$, $1, "+", $3);
+									$$ = makeOperadorComposto($$, $1, "+", $3);
 								}
-								| TK_ID TK_SUBTRACT_ASSIGNMENT TK_ID
+								| TK_ID TK_SUB_ATRIBUICAO TK_ID
 								{
-									$$ = makeCompousedOperator($$, $1, "-", $3);
+									$$ = makeOperadorComposto($$, $1, "-", $3);
 								}
-								| TK_ID TK_MULTIPLICATION_ASSIGNMENT TK_ID
+								| TK_ID TK_MULTI_ATRIBUICAO TK_ID
 								{
-									$$ = makeCompousedOperator($$, $1, "*", $3);
+									$$ = makeOperadorComposto($$, $1, "*", $3);
 								}
-								| TK_ID TK_DIVISION_ASSIGNMENT TK_ID
+								| TK_ID TK_DIV_ATRIBUICAO TK_ID
 								{
-									$$ = makeCompousedOperator($$, $1, "/", $3);
+									$$ = makeOperadorComposto($$, $1, "/", $3);
 								};
 
 UNARY_OPERATOR:
 								TK_ID TK_ADD_ADD
 								{
-									$$ = makeUnaryOperator($$, $1, "+");
+									$$ = makeOperadorUnario($$, $1, "+");
 								}
-								| TK_ID TK_SUBTRACT_SUBTRACT
+								| TK_ID TK_SUB_SUB
 								{
-									$$ = makeUnaryOperator($$, $1, "-");
+									$$ = makeOperadorUnario($$, $1, "-");
 								};
 //------------------------------------------------------------------------------
 ASSIGNMENT:
-								TK_ID TK_ASSIGNMENT E 
+								TK_ID TK_ATRIBUICAO E 
 								{
-									$$ = makeAssignment($$, $1, $3, "=");
+									$$ = makeAtribuicao($$, $1, $3, "=");
 								}
 								| OPERATORS
 								{
@@ -285,7 +285,7 @@ E:
 								}
 								| E TK_EXPLICIT_CONVERTER TYPE
 								{
-									$$ = resolveExplicitConversion($1, $3);
+									$$ = ConversaoExplicita($1, $3);
 								}
 								| CALL_FUNCTION
 								{
@@ -302,15 +302,15 @@ E:
 //------------------------------------------------------------------------------
 ARITHMETIC:
 								
-								E TK_EXPONENT E
+								E TK_EXPONENCIAL E
 								{
 									$$ = makeExponent($1, $3);
 								}
-								| E TK_MULTIPLICATION E
+								| E TK_MULTIPLICACAO E
 								{
 									$$ = makeExpression($1, "*", $3);
 								}
-								| E TK_DIVISION E
+								| E TK_DIVISAO E
 								{
 									$$ = makeExpression($1, "/", $3);
 								}
@@ -318,7 +318,7 @@ ARITHMETIC:
 								{
 									$$ = makeExpression($1, "+", $3);
 								}
-								| E TK_SUBTRACT E
+								| E TK_SUB E
 								{
 									$$ = makeExpression($1, "-", $3);
 								}
@@ -402,7 +402,7 @@ IF:
 								{
 									$$ = makeIfElse($$, $3, $5, $7);
 								}
-								| TK_ID TK_ASSIGNMENT '(' E ')' '?' VARIABLE ':' VARIABLE TK_SEMICOLON
+								| TK_ID TK_ATRIBUICAO '(' E ')' '?' VARIABLE ':' VARIABLE TK_SEMICOLON
 								{
 									$$ = makeIfTernary($$, $1, $4, $7, $9);
 								};			
@@ -490,7 +490,7 @@ DO_WHILE:
 SWITCH:					
 								TK_SWITCH '(' SEEKER_SWITCH ')' BLOCK_SWITCH
 								{	
-									$$ = iniciateSwitch($$, $5); 
+									$$ = iniciarSwitch($$, $5); 
 								};
 
 SEEKER_SWITCH: 	
@@ -566,7 +566,7 @@ AUX_PARAMETERS:
 								};
 
 FUNCTION:		
-								TK_FUNCTION FUNCTION_AUX '{' COMMANDS '}'
+								TK_FUNCAO FUNCTION_AUX '{' COMMANDS '}'
 								{
 									$$ = makeFunction($$, $2, $4);
 								};
@@ -613,7 +613,7 @@ DECLARATION_VECTOR:
 
 DECLARATION_WITH_ASSIGNMENT_VECTOR:
 
-								TK_ID '[' E ']' TK_ASSIGNMENT E
+								TK_ID '[' E ']' TK_ATRIBUICAO E
 								{
 									$$ = setValueInVector($$, $1, $3, $6);
 								};
@@ -627,20 +627,20 @@ GET_VECTOR_POSITION:
 DECLARATION_MATRIX:
 								TYPE TK_ID '[' E ']' '[' E ']'
 								{
-									$$ = makeMatrix($$, $1, $2, $4, $7);
+									$$ = makeMatriz($$, $1, $2, $4, $7);
 								}
 
 DECLARATION_WITH_ASSIGNMENT_MATRIX:
 
-								TK_ID '[' E ']' '[' E ']' TK_ASSIGNMENT E
+								TK_ID '[' E ']' '[' E ']' TK_ATRIBUICAO E
 								{
-									$$ = setValueInMatrix($$, $1, $3, $6, $9);
+									$$ = setValorMatriz($$, $1, $3, $6, $9);
 								};
 
 GET_MATRIX_POSITION:
 								TK_ID '[' E ']' '[' E ']'
 								{
-									$$ = getMatrixPosition($$, $1, $3, $6);
+									$$ = getMatrizPosition($$, $1, $3, $6);
 								};
 //------------------------------------------------------------------------------
 %%
@@ -652,9 +652,9 @@ int yyparse();
 
 int main( int argc, char* argv[] )
 {
-	iniciateCoercionTable();
+	iniciarCoercaoTable();
 	iniciateScanHelperTable();
-	iniciateStringExpressionHelperTable();
+	iniciarStringExpressionHelperTable();
 	
 	yyparse();
 

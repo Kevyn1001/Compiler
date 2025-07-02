@@ -7,50 +7,50 @@
 
 using namespace std;
 
-extern Attribute resolveAssignmentType(Attribute left, string operation, Attribute right);
+extern Attribute resolveTipoAtribuicao(Attribute left, string operation, Attribute right);
 
 
-void verifyIfIsNotDeclaredAnywere(Attribute attribute)
+void verificarSeNaoFoiDeclarado(Attribute attribute)
 {
-	Symbol symbol = getSymbolAnywere(attribute.label);
-	string message = "TK_ID '" +  attribute.label + "' is not declared. Please defines a type to '" + attribute.label + "'.\n";
+	Symbol symbol = getSimboloAnywere(attribute.label);
+	string message = "TK_ID '" +  attribute.label + "' não foi declarado. Por favor defina um tipo para '" + attribute.label + "'.\n";
 	variableHasNotBeenDeclared(symbol, message);
 }
 
-Attribute verifyIfStringType(Symbol leftSymbol, Attribute actual, Attribute left, Attribute right, string operation)
+Attribute verificarSeEhString(Symbol leftSymbol, Attribute actual, Attribute left, Attribute right, string operation)
 {
 	if(leftSymbol.type == "string") 
 	{ 
-		return makeAssignmentString(actual, left, right, leftSymbol, operation); 
+		return makeAtribuicaoString(actual, left, right, leftSymbol, operation); 
 	}
 	else
 	{
-		return makeAssignmentDefault(actual, left, right, leftSymbol, operation);
+		return makeAtribuicaoDefault(actual, left, right, leftSymbol, operation);
 	}
 }
 
 
 
-Attribute makeAssignment(Attribute actual, Attribute left, Attribute right, string operation)
+Attribute makeAtribuicao(Attribute actual, Attribute left, Attribute right, string operation)
 {
-	verifyIfIsNotDeclaredAnywere(actual);
+	verificarSeNaoFoiDeclarado(actual);
 
-	Symbol leftSymbol = getSymbolAnywere(left.label);
-	return verifyIfStringType(leftSymbol, actual, left, right, operation);
+	Symbol leftSymbol = getSimboloAnywere(left.label);
+	return verificarSeEhString(leftSymbol, actual, left, right, operation);
 }
 
-Attribute makeDeclarationWithAssignmentVar(Attribute actual, Attribute left, Attribute right, string operation)
+Attribute makeDeclaracaoVarAtribuicao(Attribute actual, Attribute left, Attribute right, string operation)
 {
 	declareTK_TYPE_SetNotDefaultValue(actual, left, right.type);
 	declareTK_TYPE_SetNotDefaultValue(actual, right, right.type);
 									
-	Symbol leftSymbol = getSymbolAnywere(left.label);
-	return verifyIfStringType(leftSymbol, actual, left, right, operation);
+	Symbol leftSymbol = getSimboloAnywere(left.label);
+	return verificarSeEhString(leftSymbol, actual, left, right, operation);
 }
 
 
 
-Attribute makeAssignmentDefault(Attribute actual, Attribute left, Attribute right, Symbol leftSimbol, string operation)
+Attribute makeAtribuicaoDefault(Attribute actual, Attribute left, Attribute right, Symbol leftSimbol, string operation)
 {
 	if(leftSimbol.type == right.type)
 	{
@@ -58,17 +58,17 @@ Attribute makeAssignmentDefault(Attribute actual, Attribute left, Attribute righ
 	}
 	else 
 	{
-		Attribute newActual = resolveAssignmentType(left, operation, right);
+		Attribute newActual = resolveTipoAtribuicao(left, operation, right);
 		return newActual;
 	}
 	return actual;
 }
 
-Attribute makeAssignmentString(Attribute actual, Attribute left, Attribute right, Symbol leftSimbol, string operation)
+Attribute makeAtribuicaoString(Attribute actual, Attribute left, Attribute right, Symbol leftSimbol, string operation)
 {
 	if(leftSimbol.type != right.type)
 	{
-		yyerror("The operation is not set to " + leftSimbol.type + " and " + right.type);
+		yyerror("A operação não foi setada para " + leftSimbol.type + " e " + right.type);
 	}
 
 	string type= "string";
@@ -88,26 +88,26 @@ Attribute makeAssignmentString(Attribute actual, Attribute left, Attribute right
 
 
 
-Attribute makeCompousedOperator(Attribute actual, Attribute left, string operation, Attribute right)
+Attribute makeOperadorComposto(Attribute actual, Attribute left, string operation, Attribute right)
 {
-  Symbol leftSimbol = getSymbolAnywere(left.label);
+  Symbol leftSimbol = getSimboloAnywere(left.label);
 	left.type = leftSimbol.type;
 
-	Symbol rightSimbol = getSymbolAnywere(right.label);
+	Symbol rightSimbol = getSimboloAnywere(right.label);
 	right.type = rightSimbol.type;
 	right.label = rightSimbol.name;
 
 	string message =  "= (" + leftSimbol.name + " " + operation + " " + right.label + ") "
-	+ " /*compoused operator*/";
+	+ " /*operador composto*/";
 
 	right.label = "";
 
-	return makeAssignment(actual, left, right, message);
+	return makeAtribuicao(actual, left, right, message);
 }
 
-Attribute makeUnaryOperator(Attribute actual, Attribute left, string operation)
+Attribute makeOperadorUnario(Attribute actual, Attribute left, string operation)
 {
-  	Symbol leftSimbol = getSymbolAnywere(left.label);
+  	Symbol leftSimbol = getSimboloAnywere(left.label);
 	Attribute auxAttribute = createActualAttribute(leftSimbol.type);
 
 	actual.translation = "\t" + auxAttribute.label + " = " + "1;\n";
@@ -115,5 +115,5 @@ Attribute makeUnaryOperator(Attribute actual, Attribute left, string operation)
 
 	auxAttribute.label = "";
 
-	return makeAssignment(actual, left, auxAttribute, message);
+	return makeAtribuicao(actual, left, auxAttribute, message);
 }

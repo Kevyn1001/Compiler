@@ -6,13 +6,13 @@
 using namespace std;
 
 
-extern Attribute resolveExpressionType(Attribute left, string operation, Attribute right);
+extern Attribute resolveTipoExpressao(Attribute left, string operation, Attribute right);
 
 
 
 Attribute makeExpression(Attribute left, string operation, Attribute right)
 {
-	Attribute newActual = resolveExpressionType(left, operation, right);
+	Attribute newActual = resolveTipoExpressao(left, operation, right);
 	return newActual;
 }
 
@@ -26,7 +26,7 @@ Attribute makeTK_NOT(Attribute actual, Attribute right)
 
 Attribute makeExponent(Attribute left, Attribute right)
 {
-    Attribute actual = resolveExpressionType(left, "^", right);
+    Attribute actual = resolveTipoExpressao(left, "^", right);
 
     actual.translation  = left.translation;
     actual.translation += right.translation;

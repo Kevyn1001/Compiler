@@ -17,15 +17,15 @@ string DEFAULT_BOOL = "falso";
 
 void verifyIfDeclaredInCurrentScope(Attribute attribute)
 {
-	Symbol symbol = getSymbolTop(attribute.label);
-	string message = "Error! TK_ID '" + attribute.label + "' declared twice.\n";
+	Symbol symbol = getSimboloTop(attribute.label);
+	string message = "Error! TK_ID '" + attribute.label + "' declarado duplicado\n";
 	variableHasAlreadyBeenDeclared(symbol, message);
 }
 
 void declareTK_TYPE_SetNotDefaultValue(Attribute actual, Attribute attribute, string type)
 {
 	verifyIfDeclaredInCurrentScope(attribute);
-	addSymbolInScope(StackContext, attribute.label, type, actual);
+	addSimboloScope(StackContext, attribute.label, type, actual);
 }
 
 Attribute setDefaultValue(Symbol currentSymbol, Attribute actual, Attribute right)
@@ -44,7 +44,7 @@ Attribute declareTK_TYPE(string type, Attribute actual, Attribute right)
 {
 	verifyIfDeclaredInCurrentScope(right);
 
-	Symbol currentSymbol = addSymbolInScope(StackContext, right.label, type, actual);
+	Symbol currentSymbol = addSimboloScope(StackContext, right.label, type, actual);
 	actual.label = right.label;
 
 	return setDefaultValue(currentSymbol, actual, right);
@@ -52,7 +52,7 @@ Attribute declareTK_TYPE(string type, Attribute actual, Attribute right)
 
 Attribute createTK_ID(Attribute actual, Attribute right)
 {
-	Symbol symbol = getSymbolAnywere(right.label);
+	Symbol symbol = getSimboloAnywere(right.label);
 
 	actual.label = symbol.name;
 	actual.type = symbol.type;

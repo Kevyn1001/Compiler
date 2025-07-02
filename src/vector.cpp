@@ -14,7 +14,7 @@ Attribute makeVector(Attribute actual, Attribute type, Attribute variable, Attri
 {
     validateVector(expression.type);
     declareTK_TYPE(type.translation+"*", actual, variable);
-    Symbol newSymbol = getSymbolAnywere(variable.label);
+    Symbol newSymbol = getSimboloAnywere(variable.label);
     
     actual.translation = 
     expression.translation
@@ -26,12 +26,12 @@ Attribute makeVector(Attribute actual, Attribute type, Attribute variable, Attri
 
 Attribute setValueInVector(Attribute actual, Attribute variable, Attribute position, Attribute expression)
 {
-    Symbol variableSymbol = getSymbolAnywere(variable.label);
+    Symbol variableSymbol = getSimboloAnywere(variable.label);
 
     Attribute aux = createCopyToMakeVectorAssignment(actual, variableSymbol);
-    Attribute newAttribute = makeAssignment(actual, aux, expression, "=");
+    Attribute newAttribute = makeAtribuicao(actual, aux, expression, "=");
 
-    Symbol auxSymbol = getSymbolAnywere(aux.label);
+    Symbol auxSymbol = getSimboloAnywere(aux.label);
 
     actual.translation =
     variable.translation
@@ -43,11 +43,11 @@ Attribute setValueInVector(Attribute actual, Attribute variable, Attribute posit
 
 Attribute makeAssignmentVector(Attribute actual, Attribute left, Attribute right, Attribute position)
 {
-    Symbol variableSymbol = getSymbolAnywere(right.label);
-    Symbol newSymbol = getSymbolAnywere(left.label);
+    Symbol variableSymbol = getSimboloAnywere(right.label);
+    Symbol newSymbol = getSimboloAnywere(left.label);
 
     Attribute aux = createCopyToMakeVectorAssignment(actual, variableSymbol);
-    Attribute newAttribute = makeAssignment(actual, left, aux, "=");
+    Attribute newAttribute = makeAtribuicao(actual, left, aux, "=");
 
     actual.translation =
     left.translation
@@ -60,7 +60,7 @@ Attribute makeAssignmentVector(Attribute actual, Attribute left, Attribute right
 
 Attribute getVectorPosition(Attribute actual, Attribute variable, Attribute position)
 {
-    Symbol variableSymbol = getSymbolAnywere(variable.label);
+    Symbol variableSymbol = getSimboloAnywere(variable.label);
 
     actual.translation = position.translation;
     actual.label = variableSymbol.name + " [ " + position.label + " ]";

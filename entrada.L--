@@ -1,4 +1,9 @@
- text s;
- s = "abc";
- integer i;
- i = s ^ 2;
+ funcao floating c (floating a, integer b)
+ {
+     var result = a + b;
+     returns result;
+ }
+
+ integer a;
+ a = c (2.9, 5);
+ show(a);
