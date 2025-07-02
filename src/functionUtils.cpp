@@ -88,7 +88,7 @@ void updateFunctionTranslation(Attribute actual)
 	functions += actual.translation;
 }
 
-bool hasAnyFunction()
+bool possuiFuncao()
 {
 	if(functions.empty())
 	{

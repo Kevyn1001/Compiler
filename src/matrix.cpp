@@ -14,13 +14,13 @@
 using namespace std;
 
 
-Attribute makeMatrix(Attribute actual, Attribute type, Attribute variable, Attribute left, Attribute right)
+Attribute makeMatriz(Attribute actual, Attribute type, Attribute variable, Attribute left, Attribute right)
 {
-    validateMatrix(left.type, "line", right.type, "column");
+    validateMatriz(left.type, "line", right.type, "column");
 
     createTK_ID(actual, variable);
 	declareTK_TYPE(type.translation+"*", actual, variable);
-    Symbol newSymbol = getSymbolAnywere(variable.label);
+    Symbol newSymbol = getSimboloAnywere(variable.label);
 
     Attribute aux = createActualAttribute("int");
 
@@ -30,21 +30,21 @@ Attribute makeMatrix(Attribute actual, Attribute type, Attribute variable, Attri
     + "\t" + aux.label + " = " + left.label + " * " + right.label + ";\n"
     + "\t" + newSymbol.name + " = ( " + type.translation + "* ) malloc( sizeof(" + type.translation + ") * " + aux.label + " );\n";
     
-    pushMatrix(createMatrix(newSymbol.name, left.label, right.label));
+    pushMatriz(createMatriz(newSymbol.name, left.label, right.label));
     return actual;
 }
 
-Attribute setValueInMatrix(Attribute actual, Attribute variable, Attribute linePosition, Attribute columnPosition, Attribute expression)
+Attribute setValorMatriz(Attribute actual, Attribute variable, Attribute linePosition, Attribute columnPosition, Attribute expression)
 {
-    Symbol variableSymbol = getSymbolAnywere(variable.label);
+    Symbol variableSymbol = getSimboloAnywere(variable.label);
     Attribute aux = createCopyToMakeVectorAssignment(actual, variableSymbol);
-    Attribute newAttribute = makeAssignment(actual, aux, expression, "=");
+    Attribute newAttribute = makeAtribuicao(actual, aux, expression, "=");
 
-    Symbol auxSymbol = getSymbolAnywere(aux.label);
-    Symbol newSymbol = getSymbolAnywere(variable.label);
+    Symbol auxSymbol = getSimboloAnywere(aux.label);
+    Symbol newSymbol = getSimboloAnywere(variable.label);
 
-    Matrix matrix = searchMatrix(newSymbol.name);
-    Attribute positionCalculated = calculateMatrixPosition(matrix, linePosition, columnPosition);
+    Matrix matrix = searchMatriz(newSymbol.name);
+    Attribute positionCalculated = calculateMatrizPosition(matrix, linePosition, columnPosition);
     
     actual.translation =
     variable.translation
@@ -56,16 +56,16 @@ Attribute setValueInMatrix(Attribute actual, Attribute variable, Attribute lineP
     return actual;
 }
 
-Attribute makeAssignmentMatrix(Attribute actual, Attribute left, Attribute right, Attribute linePosition, Attribute columnPosition)
+Attribute makeAtribuicaoMatriz(Attribute actual, Attribute left, Attribute right, Attribute linePosition, Attribute columnPosition)
 {
-    Symbol variableSymbol = getSymbolAnywere(right.label);
-    Symbol newSymbol = getSymbolAnywere(left.label);
+    Symbol variableSymbol = getSimboloAnywere(right.label);
+    Symbol newSymbol = getSimboloAnywere(left.label);
 
     Attribute aux = createCopyToMakeVectorAssignment(actual, variableSymbol);
-    Attribute newAttribute = makeAssignment(actual, left, aux, "=");
+    Attribute newAttribute = makeAtribuicao(actual, left, aux, "=");
 
-    Matrix matrix = searchMatrix(variableSymbol.name);
-    Attribute positionCalculated = calculateMatrixPosition(matrix, linePosition, columnPosition);
+    Matrix matrix = searchMatriz(variableSymbol.name);
+    Attribute positionCalculated = calculateMatrizPosition(matrix, linePosition, columnPosition);
 
     actual.translation =
     left.translation
@@ -78,12 +78,12 @@ Attribute makeAssignmentMatrix(Attribute actual, Attribute left, Attribute right
 }
 
 
-Attribute getMatrixPosition(Attribute actual, Attribute variable, Attribute linePosition, Attribute columnPosition)
+Attribute getMatrizPosition(Attribute actual, Attribute variable, Attribute linePosition, Attribute columnPosition)
 {
-    Symbol variableSymbol = getSymbolAnywere(variable.label);
+    Symbol variableSymbol = getSimboloAnywere(variable.label);
 
-    Matrix matrix = searchMatrix(variableSymbol.name);
-    Attribute positionCalculated = calculateMatrixPosition(matrix, linePosition, columnPosition);
+    Matrix matrix = searchMatriz(variableSymbol.name);
+    Attribute positionCalculated = calculateMatrizPosition(matrix, linePosition, columnPosition);
     
     actual.translation = 
     linePosition.translation 

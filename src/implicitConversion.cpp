@@ -1,7 +1,7 @@
 #include "../headers/implicitConversion.hpp"
 #include "../headers/utils.hpp"
 #include "../headers/symbols.hpp"
-#include "../headers/coercion.hpp"
+#include "../headers/Coercao.hpp"
 #include "../headers/scope.hpp"
 #include "../headers/struct.hpp"
 
@@ -9,31 +9,31 @@
 using namespace std;
 
 
-Attribute resolveAssignmentType(Attribute left, string operador, Attribute right)
+Attribute resolveTipoAtribuicao(Attribute left, string operador, Attribute right)
 {
-	Symbol leftSimbol = getSymbolAnywere(left.label);
-	Coercion coercion = getCoercion(leftSimbol.type, operador, right.type);
+	Symbol leftSimbol = getSimboloAnywere(left.label);
+	coercao coercao = getCoercao(leftSimbol.type, operador, right.type);
 
-	Attribute actual = createActualAttribute(coercion.returnedType);	
+	Attribute actual = createActualAttribute(coercao.returnedType);	
 
 	string newTemp = createTempCode();
-	addTemporary(newTemp, coercion.conversionType);
+	addTemporary(newTemp, coercao.conversionType);
 
-	string message = "\t"+ leftSimbol.name + " " + operador + " ("+ coercion.conversionType +") ", result;
+	string message = "\t"+ leftSimbol.name + " " + operador + " ("+ coercao.conversionType +") ", result;
 	
 
-	if (leftSimbol.type != coercion.conversionType)
+	if (leftSimbol.type != coercao.conversionType)
 	{
-		actual.translation = actual.translation + "\t" + leftSimbol.name + " " + operador + " (" + coercion.conversionType + ") " + actual.label + ";\n";
+		actual.translation = actual.translation + "\t" + leftSimbol.name + " " + operador + " (" + coercao.conversionType + ") " + actual.label + ";\n";
 	}
-	else if (right.type != coercion.conversionType)
+	else if (right.type != coercao.conversionType)
 	{
 		message += right.label;
 		result = newTemp;
 	}
 	else
 	{
-		yyerror("The operation is not set to " + leftSimbol.type + " and " + right.type);
+		yyerror("A operação não foi setada para " + leftSimbol.type + " e " + right.type);
 	}
 	
 	actual.translation = left.translation + right.translation + message + ";\n";
@@ -44,39 +44,39 @@ Attribute resolveAssignmentType(Attribute left, string operador, Attribute right
 
 //------------------------------------------------------------------------------
 
-Attribute resolveExpressionType(Attribute left, string operador, Attribute right)
+Attribute resolveTipoExpressao(Attribute left, string operador, Attribute right)
 {
   if (left.type == "string" || right.type == "string")
 	{ 
-    return resolveExpressionTypeString(left, operador, right);
+    return resolveTipoExpressaoString(left, operador, right);
   }
-	return resolveExpressionTypeDefault(left, operador, right);
+	return resolveTipoExpressaoDefault(left, operador, right);
 }
 
 
-Attribute resolveExpressionTypeDefault(Attribute left, string operador, Attribute right)
+Attribute resolveTipoExpressaoDefault(Attribute left, string operador, Attribute right)
 {
-	Coercion coercion = getCoercion(left.type, operador, right.type);
-	Attribute actual = createActualAttribute(coercion.returnedType);
+	Coercao coercao = getCoercao(left.type, operador, right.type);
+	Attribute actual = createActualAttribute(coercao.returnedType);
 
-	if (left.type == coercion.conversionType && right.type == coercion.conversionType)
+	if (left.type == coercao.conversionType && right.type == coercao.conversionType)
 	{
 		actual.translation = left.translation + right.translation + "\t" + actual.label +" = " + left.label + " " + operador + " " + right.label +";\n";
 	}
 	else
 	{
 		string newTemp = createTempCode();
-		addTemporary(newTemp, coercion.conversionType);
+		addTemporary(newTemp, coercao.conversionType);
 
-		string message = "\t"+ newTemp + " = " "("+ coercion.conversionType +") ", result;
+		string message = "\t"+ newTemp + " = " "("+ coercao.conversionType +") ", result;
 
 
-		if (left.type != coercion.conversionType)
+		if (left.type != coercao.conversionType)
 		{
 			message += left.label;
 			result = newTemp + " " + operador + " " + right.label;
 		}
-		else if (right.type != coercion.conversionType)
+		else if (right.type != coercao.conversionType)
 		{
 			message += right.label;
 			result = left.label + " " + operador + " " + newTemp;
@@ -90,7 +90,7 @@ Attribute resolveExpressionTypeDefault(Attribute left, string operador, Attribut
 }
 
 
-Attribute resolveExpressionTypeString(Attribute left, string operador, Attribute right)
+Attribute resolveTipoExpressaoString(Attribute left, string operador, Attribute right)
 {
 	if(operador == "+")
 	{ 
@@ -101,9 +101,9 @@ Attribute resolveExpressionTypeString(Attribute left, string operador, Attribute
 
 Attribute resolveArithmeticExpressionTypeString(Attribute left, string operador, Attribute right)
 {
-	Coercion coercion = getCoercion(left.type, operador, right.type);
-	Attribute actual = createActualAttribute(coercion.returnedType);
-	actual.type = coercion.returnedType;
+	Coercao coercao = getCoercao(left.type, operador, right.type);
+	Attribute actual = createActualAttribute(coercao.returnedType);
+	actual.type = coercao.returnedType;
 
 	if(operador == "+")
 	{
@@ -127,9 +127,9 @@ Attribute resolveLogicalExpressionTypeString(Attribute left, string operador, At
 {
 	StringExpressionHelper stringExpressionHelper = getStringExpressionHelper(operador);
 
-	Coercion coercion = getCoercion(left.type, operador, right.type);
-	Attribute actual = createActualAttribute(coercion.returnedType);
-	actual.type = coercion.returnedType;
+	Coercao coercao = getCoercao(left.type, operador, right.type);
+	Attribute actual = createActualAttribute(coercao.returnedType);
+	actual.type = coercao.returnedType;
 
 
 	string tempLabelCompare = createTempCode();
@@ -144,7 +144,7 @@ Attribute resolveLogicalExpressionTypeString(Attribute left, string operador, At
 	
 	actual.translation = left.translation + right.translation
 	+ "\t" + tempLabelCompare + " = strcmp(" + left.label+ ", " + right.label + " );\n"
-	+ "\t" + tempLabelInt + " = " + stringExpressionHelper.resultLabelStrcmpCompareSholdBe + ";\n"
+	+ "\t" + tempLabelInt + " = " + stringExpressionHelper.resultLabelStrcmpCompare + ";\n"
 	+ "\t" + tempLabelBool + " = " + tempLabelCompare + " " + stringExpressionHelper.operatorToCheck + " " + tempLabelInt + ";\n"
 	+ "\n";
 

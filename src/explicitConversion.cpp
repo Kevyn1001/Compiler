@@ -6,7 +6,7 @@ using namespace std;
 
 
 
-Attribute resolveExplicitConversion(Attribute right, Attribute type)
+Attribute ConversaoExplicita(Attribute right, Attribute type)
 {
 	Attribute newActual = createActualAttribute(type.translation);
 

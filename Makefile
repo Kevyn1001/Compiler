@@ -2,8 +2,8 @@
 
 all: 	
 	@clear
-	@lex lexica.l
-	@yacc -d sintatica.y
+	@lex lexico.l
+	@yacc -d sintatico.y
 
 run: all
 	@g++ -o compilador y.tab.c src/*.cpp -ll -lm

@@ -25,13 +25,13 @@ void pushScope(StackMapPtr, VariableTable);
 VariableTable popScope(StackMapPtr);
 StackMapPtr createMapStack();
 
-Symbol addSymbolInScope (StackMapPtr stack, string label, string type, Attribute actual);
-Symbol addSymbolInSuperiorScope (StackMapPtr stack, string label, string type, Attribute actual);
-Symbol addSymbolInGlobalScope (StackMapPtr stack, string label, string type, Attribute actual);
+Symbol addSimboloScope (StackMapPtr stack, string label, string type, Attribute actual);
+Symbol addSimboloScopeSuperior (StackMapPtr stack, string label, string type, Attribute actual);
+Symbol addSimboloScopeGlobal (StackMapPtr stack, string label, string type, Attribute actual);
 
-Symbol getSymbolAnywere(string label);
-Symbol getSymbolTop(string label);
-Symbol getSymbolGlobal(string label);
+Symbol getSimboloAnywere(string label);
+Symbol getSimboloTop(string label);
+Symbol getSimboloGlobal(string label);
 
 string getAllSymbols();
 

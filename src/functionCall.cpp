@@ -43,7 +43,7 @@ Attribute makeCallFunction(Attribute actual, Attribute left, Attribute arguments
 {
 	vector<Function> function = searchFunction(left.label);
 	
-	if(hasAnyFunction() == false)
+	if(possuiFuncao() == false)
 	{
 		yyerror("Function " + left.label + " is not found.");
 	}
