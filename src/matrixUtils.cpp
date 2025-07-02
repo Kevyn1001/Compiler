@@ -13,7 +13,7 @@ using namespace std;
 MatrixMap matrixMap;
 
 
-Attribute calculateMatrixPosition(Matrix matrix, Attribute linePosition, Attribute columnPosition)
+Attribute calculateMatrizPosition(Matrix matrix, Attribute linePosition, Attribute columnPosition)
 {
     Attribute position = createActualAttribute("int");
     Attribute positionCalculated = createActualAttribute("int");
@@ -24,25 +24,25 @@ Attribute calculateMatrixPosition(Matrix matrix, Attribute linePosition, Attribu
     return positionCalculated;
 }
 
-void validateMatrix(string lineType, string sizeLine, string columnType, string sizeColumn)
+void validateMatriz(string lineType, string sizeLine, string columnType, string sizeColumn)
 {
-    if(lineType != "int") { yyerror("The matrix rows size must be an integer type."); }
-    if(columnType != "int") { yyerror("The matrix column size must be an integer type."); }
+    if(lineType != "int") { yyerror("O tamanho das linhas da matriz deve ser do tipo inteiro."); }
+    if(columnType != "int") { yyerror("O tamanho da coluna da matriz deve ser do tipo inteiro."); }
 }
 
 
-void pushMatrix(Matrix matrix)
+void pushMatriz(Matrix matrix)
 {
 	string name = matrix.name;
     matrixMap[name] = matrix;
 }
 
-Matrix searchMatrix(string name)
+Matrix searchMatriz(string name)
 {
 	return matrixMap[name];
 }
 
-Matrix createMatrix(string name, string numLines, string numColumns)
+Matrix createMatriz(string name, string numLines, string numColumns)
 {
     Matrix matrix;
     matrix.name = name;
@@ -51,7 +51,7 @@ Matrix createMatrix(string name, string numLines, string numColumns)
     return matrix;
 }
 
-Attribute removeBracketOfMatrix(Attribute matrixWithPosition)
+Attribute removeBracketMatriz(Attribute matrixWithPosition)
 {
     // remove bracket of matrix. ex: v3[t7] to v3
     stringstream sstream(matrixWithPosition.label);

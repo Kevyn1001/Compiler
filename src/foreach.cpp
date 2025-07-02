@@ -21,14 +21,14 @@ Attribute makeForeachCounter(Attribute actual, Attribute declarationWithAssignme
   Attribute aux2 = createActualAttribute(_vector.type);
   declareTK_TYPE(_vector.type, actual, aux2);
 
-  Symbol aux1Symbol = getSymbolAnywere(aux1.label);
+  Symbol aux1Symbol = getSimboloAnywere(aux1.label);
   aux2.translation = "\t" + aux2.label + " = " + _vector.size + ";\n";
   aux1.translation += aux2.translation
   + "\t" + aux1.label + " = " + aux1Symbol.name + " < " + aux2.label + ";\n";
 
   Attribute increment = createActualAttribute(_vector.type);
   declareTK_TYPE(_vector.type, actual, increment);
-  increment = makeUnaryOperator(actual, aux1, "+");
+  increment = makeOperadorUnario(actual, aux1, "+");
 
   return makeForCounter(actual, declarationWithAssignment, aux1, increment, expression);
 }

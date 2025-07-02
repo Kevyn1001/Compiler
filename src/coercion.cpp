@@ -31,7 +31,7 @@ Coercion resolveString(string type1, string operation, string type2)
 	{
 		return coercionTable[key];
 	}
-	yyerror("Cannot convert type " + type1 + " to type " + type2 + ".");
+	yyerror("Não foi possivel converter o tipo " + type1 + " para o tipo " + type2 + ".");
 	return removeWarning();
 }
 
@@ -47,7 +47,7 @@ Coercion resolveDefault(string type1, string operation, string type2)
 	{
 		return coercionTable[key];
 	}
-	yyerror("Cannot convert type " + type1 + " to type " + type2 + ".");
+	yyerror("Não foi possivel converter o tipo" + type1 + " para o tipo " + type2 + ".");
 	return removeWarning();
 }
 
@@ -58,7 +58,7 @@ Coercion removeWarning()
 	return notFound;
 }
 
-void iniciateCoercionTable()
+void iniciarCoercionTable()
 {
 	coercionTable[generateKey("int", "=", "float")] = {"int", "int"};
 	coercionTable[generateKey("float", "=", "int")] = {"float", "float"};
@@ -156,7 +156,7 @@ StringExpressionHelper getStringExpressionHelper(string operation)
 	return stringExpressionHelperTable[operation];
 }
 
-void iniciateStringExpressionHelperTable()
+void iniciarStringExpressionHelperTable()
 {
 	stringExpressionHelperTable["=="] = {"0", "=="};
 	stringExpressionHelperTable["!="] = {"0", "!="};

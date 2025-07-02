@@ -23,7 +23,7 @@ string makeScan(Attribute value, string size)
     validateInput(value);
 
     if(value.type != "string")
-    { yyerror("This function with these parameters is only accepted for the string type."); }
+    { yyerror("Essa função com esses parâmetros só é aceita para o tipo string."); }
 
     return value.label + " = new char[" + size + "];\n" +
        value.translation + "\t" + "cin.getline(" + value.label + ", " + size + ");\n";
@@ -43,7 +43,7 @@ ScanHelper getScanHelper(string key)
     ScanHelper scanHelper = ScanHelperTable[key];
 
     if(scanHelper.format.empty())
-    { yyerror("This function with these parameters does not accept " + key + " type."); }
+    { yyerror("Essa função com esses parâmetros não aceita" + key + " tipo."); }
 
     return scanHelper;
 }
@@ -58,5 +58,5 @@ void iniciateScanHelperTable()
 
 void validateInput(Attribute variable)
 {
-    if(variable.label == "") { yyerror("Variable not found.\n"); }
+    if(variable.label == "") { yyerror("Variavel não encontrada.\n"); }
 }

@@ -20,7 +20,7 @@ Attribute makeParametersFunction(Attribute actual, string previousParameters, At
 
 	createTK_ID(actual, parameter);
 	declareTK_TYPE(type.translation, actual, parameter);
-	Symbol newSymbol = getSymbolAnywere(parameter.label);
+	Symbol newSymbol = getSimboloAnywere(parameter.label);
 
 	actual.translation = previousParameters + type.translation + " " + newSymbol.name;
 
@@ -38,7 +38,7 @@ Attribute makeFunctionAux(Attribute actual, Attribute returnType, Attribute TK_i
 	if(tryAddFunction(function))
 	{
 		functionFormater(function);
-		addSymbolInSuperiorScope(StackContext, TK_id_function.label, returnType.translation, actual);
+		addSimboloScopeSuperior(StackContext, TK_id_function.label, returnType.translation, actual);
 		
 		actual.type = returnType.translation;
 		actual.translation = returnType.translation + " " + function.name + "(" + previousParameters.translation + ")\n";

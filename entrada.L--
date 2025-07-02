@@ -1,4 +1,8 @@
- text s;
- s = "abc";
- integer i;
- i = s ^ 2;
+integer i;
+ integer somador;
+
+ iterate (i; i < 10; i = i + 1)
+ {
+   somador = somador + 1;
+   break;
+ }

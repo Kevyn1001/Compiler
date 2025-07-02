@@ -11,7 +11,7 @@ Attribute makeBreak(Attribute actual, Attribute breakAttrubute)
 {
   if(!hasLoop())
   {
-    yyerror("Break out of a loop");
+    yyerror("Break fora do loop");
   }
   actual.translation = 
   "\t//*break init*//\n\tgoto " + getLoop().endLabel + ";\n"
@@ -23,7 +23,7 @@ Attribute makeContinue(Attribute actual, Attribute continueAttribute)
 {
   if(!hasLoop())
   {
-    yyerror("Continue out of a loop");
+    yyerror("Continue fora do loop");
   }
   actual.translation = 
   "\t//*continue init*//\n\tgoto " + getLoop().continueLabel + ";\n"

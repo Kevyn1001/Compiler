@@ -7,6 +7,6 @@
 using namespace structs;
 
 
-Attribute resolveExplicitConversion(Attribute right, Attribute type);
+Attribute resolveConversaoExplicita(Attribute right, Attribute type);
 
 #endif

@@ -9,9 +9,9 @@
 using namespace std;
 
 
-Attribute resolveAssignmentType(Attribute left, string operador, Attribute right)
+Attribute resolveTipoAtribuicao(Attribute left, string operador, Attribute right)
 {
-	Symbol leftSimbol = getSymbolAnywere(left.label);
+	Symbol leftSimbol = getSimboloAnywere(left.label);
 	Coercion coercion = getCoercion(leftSimbol.type, operador, right.type);
 
 	Attribute actual = createActualAttribute(coercion.returnedType);	
@@ -33,7 +33,7 @@ Attribute resolveAssignmentType(Attribute left, string operador, Attribute right
 	}
 	else
 	{
-		yyerror("The operation is not set to " + leftSimbol.type + " and " + right.type);
+		yyerror("A operação não foi setada para " + leftSimbol.type + " e " + right.type);
 	}
 	
 	actual.translation = left.translation + right.translation + message + ";\n";
@@ -44,17 +44,17 @@ Attribute resolveAssignmentType(Attribute left, string operador, Attribute right
 
 //------------------------------------------------------------------------------
 
-Attribute resolveExpressionType(Attribute left, string operador, Attribute right)
+Attribute resolveTipoExpressao(Attribute left, string operador, Attribute right)
 {
   if (left.type == "string" || right.type == "string")
 	{ 
-    return resolveExpressionTypeString(left, operador, right);
+    return resolveTipoExpressaoString(left, operador, right);
   }
-	return resolveExpressionTypeDefault(left, operador, right);
+	return resolveTipoExpressaoDefault(left, operador, right);
 }
 
 
-Attribute resolveExpressionTypeDefault(Attribute left, string operador, Attribute right)
+Attribute resolveTipoExpressaoDefault(Attribute left, string operador, Attribute right)
 {
 	Coercion coercion = getCoercion(left.type, operador, right.type);
 	Attribute actual = createActualAttribute(coercion.returnedType);
@@ -90,7 +90,7 @@ Attribute resolveExpressionTypeDefault(Attribute left, string operador, Attribut
 }
 
 
-Attribute resolveExpressionTypeString(Attribute left, string operador, Attribute right)
+Attribute resolveTipoExpressaoString(Attribute left, string operador, Attribute right)
 {
 	if(operador == "+")
 	{ 
@@ -144,7 +144,7 @@ Attribute resolveLogicalExpressionTypeString(Attribute left, string operador, At
 	
 	actual.translation = left.translation + right.translation
 	+ "\t" + tempLabelCompare + " = strcmp(" + left.label+ ", " + right.label + " );\n"
-	+ "\t" + tempLabelInt + " = " + stringExpressionHelper.resultLabelStrcmpCompareSholdBe + ";\n"
+	+ "\t" + tempLabelInt + " = " + stringExpressionHelper.resultLabelStrcmpCompare + ";\n"
 	+ "\t" + tempLabelBool + " = " + tempLabelCompare + " " + stringExpressionHelper.operatorToCheck + " " + tempLabelInt + ";\n"
 	+ "\n";
 

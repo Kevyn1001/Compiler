@@ -14,7 +14,7 @@ typedef struct coercion
 
 typedef struct stringExpressionHelper
 {
-  string resultLabelStrcmpCompareSholdBe;
+  string resultLabelStrcmpCompare;
   string operatorToCheck;
 } StringExpressionHelper;
 
@@ -25,13 +25,13 @@ extern map<string, StringExpressionHelper> stringExpressionHelperTable;
 
 
 TripleKey generateKey(string , string, string);
-void iniciateCoercionTable();
+void iniciarCoercionTable();
 Coercion getCoercion(string type1, string operation, string type2);
 
 Coercion resolveString(string type1, string operation, string type2);
 Coercion resolveDefault(string type1, string operation, string type2);
 
-void iniciateStringExpressionHelperTable();
+void iniciarStringExpressionHelperTable();
 StringExpressionHelper getStringExpressionHelper(string operation);
 
 #endif

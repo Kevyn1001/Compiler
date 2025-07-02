@@ -34,7 +34,7 @@ string getTopFunction();
 bool tryAddFunction(Function function);
 bool checkOverload(Function function, string name);
 //------------------------------------------------
-bool hasAnyFunction();
+bool possuiFuncao();
 void updateFunctionTranslation(Attribute actual);
 //------------------------------------------------
 

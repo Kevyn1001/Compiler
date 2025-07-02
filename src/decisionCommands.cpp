@@ -41,14 +41,14 @@ Attribute makeIfElse(Attribute actual, Attribute expression, Attribute blockComm
 
 Attribute makeIfTernary(Attribute actual, Attribute left, Attribute expression, Attribute right1,  Attribute right2)
 {
-  Symbol symbol = getSymbolAnywere(left.label);
+  Symbol symbol = getSimboloAnywere(left.label);
   left.label = symbol.label; left.type = symbol.type;
 
   Attribute auxActual = createActualAttribute(left.type);
-  addSymbolInScope(StackContext, auxActual.label, auxActual.type, actual);
+  addSimboloScope(StackContext, auxActual.label, auxActual.type, actual);
 
-  Attribute blockCommandIf = makeAssignment(auxActual, left, right1, "=");
-  Attribute blockCommandElse = makeAssignment(auxActual, left, right2, "=");
+  Attribute blockCommandIf = makeAtribuicao(auxActual, left, right1, "=");
+  Attribute blockCommandElse = makeAtribuicao(auxActual, left, right2, "=");
 
   return makeIfElse(actual, expression, blockCommandIf, blockCommandElse);  
 }
@@ -58,7 +58,7 @@ Attribute makeIfTernary(Attribute actual, Attribute left, Attribute expression, 
 
 stack<Switcher> switcherStack;
 
-Attribute iniciateSwitch(Attribute actual, Attribute blockSwitch)
+Attribute iniciarSwitch(Attribute actual, Attribute blockSwitch)
 {
   actual.translation = blockSwitch.translation;
   switcherStack.pop();
@@ -71,7 +71,7 @@ void createSwicher(Attribute searchVariable)
   switcher.endLabel = createGotoLabel();
   switcher.nextLabel = createGotoLabel();
 
-  Symbol symbol = getSymbolAnywere(searchVariable.label);
+  Symbol symbol = getSimboloAnywere(searchVariable.label);
   
   switcher.searchVariable = symbol;
   switcherStack.push(switcher);
@@ -115,7 +115,7 @@ Attribute resolveCheckerSwitch(Attribute actual, string operador, Attribute vari
 
   Attribute comparator;
   comparator.type = topStack.searchVariable.type;
-  comparator.label = getSymbolAnywere(topStack.searchVariable.label).name;
+  comparator.label = getSimboloAnywere(topStack.searchVariable.label).name;
 
-  return resolveExpressionType(comparator, operador, variable);
+  return resolveTipoExpressao(comparator, operador, variable);
 }

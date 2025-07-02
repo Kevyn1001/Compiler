@@ -34,7 +34,7 @@ Symbol removePointerOfVectorType(Symbol variableSymbol)
 
 void validateVector(string type)
 {
-    if(type != "int") { yyerror("The vector size must be an integer type."); }
+    if(type != "int") { yyerror("O tamanho do vetor deve ser um tipo inteiro."); }
 }
 
 void pushVector(Vector vector)
@@ -46,7 +46,7 @@ void pushVector(Vector vector)
 Vector searchVector(string label)
 {
 	Vector vetor = vectorMap[label];
-    if(vetor.label == "") {yyerror(label + " is not a vector."); }
+    if(vetor.label == "") {yyerror(label + " não é um vetor."); }
     return vetor;
 }
 
